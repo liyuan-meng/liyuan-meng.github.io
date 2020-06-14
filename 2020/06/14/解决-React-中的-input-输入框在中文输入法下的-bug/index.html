@@ -5,13 +5,17 @@
   
 
   
-  <title>Hexo</title>
+  <title>解决 React 中的 input 输入框在中文输入法下的 bug | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://yoursite.com/index.html">
+  <meta name="description" content="以下会涉及到的技术点：react mobx compositionstart compositionupdate compositionend 问题描述在使用 input 时，通常会对输入的内容做校验，校验的方式无非两种：  允许用户输入，并且做错误提示； 不允许用户输入正则或者函数匹配到的字符。  现有如下需求：“仅允许输入英文、数字和汉字，不允许输入其他特殊字符和符号”。显然这种场景需要使用第">
+<meta property="og:type" content="article">
+<meta property="og:title" content="解决 React 中的 input 输入框在中文输入法下的 bug">
+<meta property="og:url" content="http://yoursite.com/2020/06/14/%E8%A7%A3%E5%86%B3-React-%E4%B8%AD%E7%9A%84-input-%E8%BE%93%E5%85%A5%E6%A1%86%E5%9C%A8%E4%B8%AD%E6%96%87%E8%BE%93%E5%85%A5%E6%B3%95%E4%B8%8B%E7%9A%84-bug/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="以下会涉及到的技术点：react mobx compositionstart compositionupdate compositionend 问题描述在使用 input 时，通常会对输入的内容做校验，校验的方式无非两种：  允许用户输入，并且做错误提示； 不允许用户输入正则或者函数匹配到的字符。  现有如下需求：“仅允许输入英文、数字和汉字，不允许输入其他特殊字符和符号”。显然这种场景需要使用第">
 <meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-06-14T15:09:03.000Z">
+<meta property="article:modified_time" content="2020-06-14T17:36:43.568Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
   
@@ -62,9 +66,7 @@
 </header>
 
       <div class="outer">
-        <section id="main">
-  
-    <article id="post-解决-React-中的-input-输入框在中文输入法下的-bug" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-解决-React-中的-input-输入框在中文输入法下的-bug" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2020/06/14/%E8%A7%A3%E5%86%B3-React-%E4%B8%AD%E7%9A%84-input-%E8%BE%93%E5%85%A5%E6%A1%86%E5%9C%A8%E4%B8%AD%E6%96%87%E8%BE%93%E5%85%A5%E6%B3%95%E4%B8%8B%E7%9A%84-bug/" class="article-date">
   <time datetime="2020-06-14T15:09:03.000Z" itemprop="datePublished">2020-06-14</time>
@@ -77,8 +79,8 @@
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/06/14/%E8%A7%A3%E5%86%B3-React-%E4%B8%AD%E7%9A%84-input-%E8%BE%93%E5%85%A5%E6%A1%86%E5%9C%A8%E4%B8%AD%E6%96%87%E8%BE%93%E5%85%A5%E6%B3%95%E4%B8%8B%E7%9A%84-bug/">解决 React 中的 input 输入框在中文输入法下的 bug</a>
+    <h1 class="article-title" itemprop="name">
+      解决 React 中的 input 输入框在中文输入法下的 bug
     </h1>
   
 
@@ -157,239 +159,19 @@
     </footer>
   </div>
   
-</article>
-
-
+    
+<nav id="article-nav">
   
-    <article id="post-解决 React 中的 input 输入框在中文输入法下的 bug" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/06/14/%E8%A7%A3%E5%86%B3%20React%20%E4%B8%AD%E7%9A%84%20input%20%E8%BE%93%E5%85%A5%E6%A1%86%E5%9C%A8%E4%B8%AD%E6%96%87%E8%BE%93%E5%85%A5%E6%B3%95%E4%B8%8B%E7%9A%84%20bug/" class="article-date">
-  <time datetime="2020-06-14T12:35:18.552Z" itemprop="datePublished">2020-06-14</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/06/14/%E8%A7%A3%E5%86%B3%20React%20%E4%B8%AD%E7%9A%84%20input%20%E8%BE%93%E5%85%A5%E6%A1%86%E5%9C%A8%E4%B8%AD%E6%96%87%E8%BE%93%E5%85%A5%E6%B3%95%E4%B8%8B%E7%9A%84%20bug/">解决 React 中的 input 输入框在中文输入法下的 bug</a>
-    </h1>
+    <a href="/2020/06/14/%E8%A7%A3%E5%86%B3%20React%20%E4%B8%AD%E7%9A%84%20input%20%E8%BE%93%E5%85%A5%E6%A1%86%E5%9C%A8%E4%B8%AD%E6%96%87%E8%BE%93%E5%85%A5%E6%B3%95%E4%B8%8B%E7%9A%84%20bug/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">解决 React 中的 input 输入框在中文输入法下的 bug</div>
+    </a>
   
+</nav>
 
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>##</p>
-<p><a href="https://github.com/liyuan-meng/my-react-app/tree/master/src/inputAndComposition" target="_blank" rel="noopener">https://github.com/liyuan-meng/my-react-app/tree/master/src/inputAndComposition</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/06/14/%E8%A7%A3%E5%86%B3%20React%20%E4%B8%AD%E7%9A%84%20input%20%E8%BE%93%E5%85%A5%E6%A1%86%E5%9C%A8%E4%B8%AD%E6%96%87%E8%BE%93%E5%85%A5%E6%B3%95%E4%B8%8B%E7%9A%84%20bug/" data-id="ckbfcqcz500008xxn124oa008" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
   
 </article>
-
-
-  
-    <article id="post-GridManager-表格常用配置" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/05/25/GridManager-%E8%A1%A8%E6%A0%BC%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/" class="article-date">
-  <time datetime="2020-05-25T08:48:24.000Z" itemprop="datePublished">2020-05-25</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/05/25/GridManager-%E8%A1%A8%E6%A0%BC%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/">GridManager 表格常用配置</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>GridManager 库地址：<a href="http://gridmanager.lovejavascript.com/index.html" target="_blank" rel="noopener">http://gridmanager.lovejavascript.com/index.html</a></p>
-<h4 id="1-基础使用—动态数据表格"><a href="#1-基础使用—动态数据表格" class="headerlink" title="1. 基础使用—动态数据表格"></a>1. 基础使用—动态数据表格</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">render() &#123;</span><br><span class="line">  return &lt;Table</span><br><span class="line">      gridManagerName&#x3D;&quot;test&quot;</span><br><span class="line">      disableLine</span><br><span class="line">      supportAjaxPage</span><br><span class="line">      supportAutoOrder&#x3D;&#123;false&#125;</span><br><span class="line">      checkboxConfig&#x3D;&#123;&#123; useRowCheck: true &#125;&#125;</span><br><span class="line">      supportDrag&#x3D;&#123;false&#125;</span><br><span class="line">      supportCheckbox&#x3D;&#123;false&#125;</span><br><span class="line">      currentPageKey&#x3D;&quot;pageNum&quot;</span><br><span class="line">      pageSizeKey&#x3D;&quot;pageSize&quot;</span><br><span class="line">      ajaxData&#x3D;&#123;gridAjaxData&#125;</span><br><span class="line">      columnData&#x3D;&#123;columnData&#125;</span><br><span class="line">	&#x2F;&gt;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h4 id="2-静态数据表格（排序、分页、搜索、下载）"><a href="#2-静态数据表格（排序、分页、搜索、下载）" class="headerlink" title="2. 静态数据表格（排序、分页、搜索、下载）"></a>2. 静态数据表格（排序、分页、搜索、下载）</h4><h4 id="3-多选表格（数据回显、选中状态禁用、设置行选中的唯一key值、最大选中行的限制）"><a href="#3-多选表格（数据回显、选中状态禁用、设置行选中的唯一key值、最大选中行的限制）" class="headerlink" title="3. 多选表格（数据回显、选中状态禁用、设置行选中的唯一key值、最大选中行的限制）"></a>3. 多选表格（数据回显、选中状态禁用、设置行选中的唯一key值、最大选中行的限制）</h4><h4 id="4-树状表格"><a href="#4-树状表格" class="headerlink" title="4. 树状表格"></a>4. 树状表格</h4><h4 id="5-常用的一些使用优化（firstLoading，-isIconFollowText，拖拽、隐藏行）"><a href="#5-常用的一些使用优化（firstLoading，-isIconFollowText，拖拽、隐藏行）" class="headerlink" title="5. 常用的一些使用优化（firstLoading， isIconFollowText，拖拽、隐藏行）"></a>5. 常用的一些使用优化（firstLoading， isIconFollowText，拖拽、隐藏行）</h4>
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/05/25/GridManager-%E8%A1%A8%E6%A0%BC%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/" data-id="ckbfcqczk00018xxn4e7cafac" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/GridManager/" rel="tag">GridManager</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-安装-Linux-版本为知笔记" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/05/25/%E5%AE%89%E8%A3%85-Linux-%E7%89%88%E6%9C%AC%E4%B8%BA%E7%9F%A5%E7%AC%94%E8%AE%B0/" class="article-date">
-  <time datetime="2020-05-25T07:46:37.000Z" itemprop="datePublished">2020-05-25</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/05/25/%E5%AE%89%E8%A3%85-Linux-%E7%89%88%E6%9C%AC%E4%B8%BA%E7%9F%A5%E7%AC%94%E8%AE%B0/">安装 Linux 版本为知笔记</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="官网安装方式"><a href="#官网安装方式" class="headerlink" title="官网安装方式"></a>官网安装方式</h3><ul>
-<li>下载 <a href="http://www.wiz.cn/wiznote-linux.html" target="_blank" rel="noopener">http://www.wiz.cn/wiznote-linux.html</a></li>
-<li>Ubuntu 18.04 下运行前，请先执行 sudo apt install openssl1.0 libssl1.0-dev ，再双击运行绿色版</li>
-<li>推荐使用 ibus 输入法</li>
-</ul>
-<h3 id="下载-deb-文件进行安装"><a href="#下载-deb-文件进行安装" class="headerlink" title="下载 .deb 文件进行安装"></a>下载 .deb 文件进行安装</h3><ul>
-<li>安装包下载 <a href="https://launchpad.net/~wiznote-team/+archive/ubuntu/ppa/+packages" target="_blank" rel="noopener">https://launchpad.net/~wiznote-team/+archive/ubuntu/ppa/+packages</a></li>
-<li>双击下载的 .deb 文件进行安装</li>
-</ul>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/05/25/%E5%AE%89%E8%A3%85-Linux-%E7%89%88%E6%9C%AC%E4%B8%BA%E7%9F%A5%E7%AC%94%E8%AE%B0/" data-id="ckam6t4900005v8xn8nih9j4g" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux-%E4%B8%BA%E7%9F%A5%E7%AC%94%E8%AE%B0/" rel="tag">Linux 为知笔记</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-使用Hexo-Github搭建博客" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/05/25/%E4%BD%BF%E7%94%A8Hexo-Github%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/" class="article-date">
-  <time datetime="2020-05-25T07:29:59.000Z" itemprop="datePublished">2020-05-25</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/05/25/%E4%BD%BF%E7%94%A8Hexo-Github%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/">使用Hexo + Github搭建博客</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="1-在-github-上创建项目"><a href="#1-在-github-上创建项目" class="headerlink" title="1. 在 github 上创建项目"></a>1. 在 github 上创建项目</h3><ul>
-<li>在 github 上创建一个仓库 liyuan-meng.github.io(用户名.github.io)</li>
-<li>在搭建好的项目页点击 settings-GitHub Pages，你会发现项目已经部署到网络上： Your site is published at <a href="https://liyuan-meng.github.io/" target="_blank" rel="noopener">https://liyuan-meng.github.io/</a></li>
-</ul>
-<h3 id="2-本地安装-Hexo-并更新配置"><a href="#2-本地安装-Hexo-并更新配置" class="headerlink" title="2. 本地安装 Hexo 并更新配置"></a>2. 本地安装 Hexo 并更新配置</h3><ul>
-<li><p>安装 Hexo</p>
-<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo -g</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>检查 Hexo 是否安装成功</p>
-<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo -v</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>创建一个文件夹用来写博客</p>
-<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir blog</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>进入到 blog 目录下，初始化该文件夹，看到后面的“Start blogging with Hexo！”表示初始化成功！</p>
-<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo init</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>安装依赖</p>
-<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>启动 hexo 服务并访问 localhost:4000</p>
-<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo s</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<h3 id="3-关联-Github-和-Hexo"><a href="#3-关联-Github-和-Hexo" class="headerlink" title="3. 关联 Github 和 Hexo"></a>3. 关联 Github 和 Hexo</h3><ul>
-<li><p>设置 github 的 username 和 email(如果之前设置过则跳过此步骤)</p>
-<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git config --global user.name "liyuan-meng"</span><br><span class="line"></span><br><span class="line">git config --global user.email "****@163.com"</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>进入到 .ssh 目录下</p>
-<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd ~/.ssh</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>生成秘钥和公钥（一路回车即可），得到两个文件: id_rsa、id_rsa.pub</p>
-<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -C "****@163.com"</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>将秘钥添加到 ssh-agent</p>
-<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-add ~/.ssh/id_rsa</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>登录 github，点击头像下的 settings，选择 SSH and GPG keys，添加一个 ssh key，然后将公钥 id_rsa.pub 文件中的内容复制进去</p>
-</li>
-<li><p>测试 ssh key 是否添加成功</p>
-<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -T git@github.com</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>配置 deploy，打开 blog/_config.yml 文件，修改 deploy</p>
-<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repository: git@github.com:liyuan-meng/liyuan-meng.github.io.git</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<h3 id="4-创建博客并提交"><a href="#4-创建博客并提交" class="headerlink" title="4. 创建博客并提交"></a>4. 创建博客并提交</h3><ul>
-<li><p>安装扩展</p>
-<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>在 _posts 目录下创建一个 markdown 文件</p>
-<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo new 'hello,hexo'</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>生成以及部署</p>
-<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo d -g</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<p>另一种写法</p>
-<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo generate</span><br><span class="line">hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>访问 <a href="http://liyuan-meng.github.io" target="_blank" rel="noopener">http://liyuan-meng.github.io</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/05/25/%E4%BD%BF%E7%94%A8Hexo-Github%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/" data-id="ckam67qn10004v8xnfayd5zpn" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-
 
 </section>
         
