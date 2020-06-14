@@ -15,7 +15,7 @@
 <meta property="og:description" content="以下会涉及到的技术点：react mobx compositionstart compositionupdate compositionend 问题描述在使用 input 时，通常会对输入的内容做校验，校验的方式无非两种：  允许用户输入，并且做错误提示； 不允许用户输入正则或者函数匹配到的字符。  现有如下需求：“仅允许输入英文、数字和汉字，不允许输入其他特殊字符和符号”。显然这种场景需要使用第">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-06-14T15:09:03.000Z">
-<meta property="article:modified_time" content="2020-06-14T17:36:43.568Z">
+<meta property="article:modified_time" content="2020-06-14T17:43:58.986Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
   
@@ -125,7 +125,7 @@
 <p>我仍然使用开篇那个 demo 来测试这个代码，发现事情又神奇了一点呢，这次拼音压根就输不进去了哇～</p>
 <p>我查看了下在输入拼音时函数的调用</p>
 <p>![image-20200615005541929](/Users/liyuanmeng/Library/Application Support/typora-user-images/image-20200615005541929.png)</p>
-<p>是的，宁没有看错，只触发了这两个函数，我起初以为是逻辑被我写扣圈了，想了想原因（其实我想了好久，人略笨，见笑）：</p>
+<p>是的，宁没有看错，只触发了onCompositionstart 和 onCompositionupdate这两个函数，我起初以为是逻辑被我写扣圈了，想了想原因（其实我想了好久，人略笨，见笑）：</p>
 <p>罪魁祸首就是绑定在 input 上的那个 value，输入拼音的过程中，state.value 一直没变，input 中自然不会有任何输入值，没有输入值，也就完成不了输入过程，触发不了 compositionend，一直处于“过程中”。</p>
 <p>所以这次不是程序逻辑扣圈，是中断了。</p>
 <p>于是我又想如何把中断的程序接起来（对的，垮掉了我们就捡起来，哈），完成这个链条。</p>
