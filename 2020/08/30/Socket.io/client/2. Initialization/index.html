@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Socket.io/client/2. Initialization | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Once you have installed the Socket.IO client library, you can now init the client. The complete list of options can be found here. In the examples below, the io object comes either from: 一旦安装了Socket.I">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Socket.io&#x2F;client&#x2F;2. Initialization">
+<meta property="og:url" content="http://yoursite.com/2020/08/30/Socket.io/client/2.%20Initialization/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Once you have installed the Socket.IO client library, you can now init the client. The complete list of options can be found here. In the examples below, the io object comes either from: 一旦安装了Socket.I">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-08-30T03:42:35.254Z">
+<meta property="article:modified_time" content="2020-08-30T07:07:08.449Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">LilyMeng's Blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a class="nav-icon" style="width: 46px" href="https://github.com/liyuan-meng" target="_blank">Github</a>
+        
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-Socket.io/client/2. Initialization" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/08/30/Socket.io/client/2.%20Initialization/" class="article-date">
+  <time datetime="2020-08-30T03:42:35.254Z" itemprop="datePublished">2020-08-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Socket.io/client/2. Initialization
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Once you have <a href="https://socket.io/docs/client-installation/" target="_blank" rel="noopener">installed</a> the Socket.IO client library, you can now init the client. The complete list of options can be found <a href="https://socket.io/docs/client-api/#new-Manager-url-options" target="_blank" rel="noopener">here</a>.</p>
+<p>In the examples below, the <code>io</code> object comes either from:</p>
+<p>一旦安装了Socket.IO客户端库，就可以初始化客户端。 选项的完整列表可以在这里找到。</p>
+<p>在以下示例中，io对象来自：</p>
+<ul>
+<li>the <script> import</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"/socket.io/socket.io.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>NPM</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ES6 import</span></span><br><span class="line"><span class="keyword">import</span> io <span class="keyword">from</span> <span class="string">'socket.io-client'</span>;</span><br><span class="line"><span class="comment">// CommonJS</span></span><br><span class="line"><span class="keyword">const</span> io = <span class="built_in">require</span>(<span class="string">'socket.io-client'</span>);</span><br></pre></td></tr></table></figure>
+
+<h2 id="From-the-same-domain"><a href="#From-the-same-domain" class="headerlink" title="From the same domain"></a>From the same domain</h2><p>If your front is served on the same domain as your server, you can simply use:</p>
+<p>如果您的前台与服务器位于同一域中，则可以简单地使用：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> socket = io();</span><br></pre></td></tr></table></figure>
+
+<p>The server URL will be deduced from the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/location" target="_blank" rel="noopener">window.location</a> object.</p>
+<p>Additional options can be passed:</p>
+<p>服务器URL将从window.location对象推导出。</p>
+<p>可以传递其他选项：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// default values</span></span><br><span class="line"><span class="keyword">const</span> socket = io(&#123;</span><br><span class="line">  path: <span class="string">'/socket.io'</span>,</span><br><span class="line">  reconnection: <span class="literal">true</span>,</span><br><span class="line">  reconnectionAttempts: <span class="literal">Infinity</span>,</span><br><span class="line">  reconnectionDelay: <span class="number">1000</span>,</span><br><span class="line">  reconnectionDelayMax: <span class="number">5000</span>,</span><br><span class="line">  randomizationFactor: <span class="number">0.5</span>,</span><br><span class="line">  timeout: <span class="number">20000</span>,</span><br><span class="line">  autoConnect: <span class="literal">true</span>,</span><br><span class="line">  query: &#123;&#125;,</span><br><span class="line">  <span class="comment">// options of the Engine.IO client</span></span><br><span class="line">  upgrade: <span class="literal">true</span>,</span><br><span class="line">  forceJSONP: <span class="literal">false</span>,</span><br><span class="line">  jsonp: <span class="literal">true</span>,</span><br><span class="line">  forceBase64: <span class="literal">false</span>,</span><br><span class="line">  enablesXDR: <span class="literal">false</span>,</span><br><span class="line">  timestampRequests: <span class="literal">true</span>,</span><br><span class="line">  timestampParam: <span class="string">'t'</span>,</span><br><span class="line">  policyPort: <span class="number">843</span>,</span><br><span class="line">  transports: [<span class="string">'polling'</span>, <span class="string">'websocket'</span>],</span><br><span class="line">  transportOptions: &#123;&#125;,</span><br><span class="line">  rememberUpgrade: <span class="literal">false</span>,</span><br><span class="line">  onlyBinaryUpgrades: <span class="literal">false</span>,</span><br><span class="line">  requestTimeout: <span class="number">0</span>,</span><br><span class="line">  protocols: [],</span><br><span class="line">  <span class="comment">// options for Node.js</span></span><br><span class="line">  agent: <span class="literal">false</span>,</span><br><span class="line">  pfx: <span class="literal">null</span>,</span><br><span class="line">  key: <span class="literal">null</span>,</span><br><span class="line">  passphrase: <span class="literal">null</span>,</span><br><span class="line">  cert: <span class="literal">null</span>,</span><br><span class="line">  ca: <span class="literal">null</span>,</span><br><span class="line">  ciphers: [],</span><br><span class="line">  rejectUnauthorized: <span class="literal">true</span>,</span><br><span class="line">  perMessageDeflate: <span class="literal">true</span>,</span><br><span class="line">  forceNode: <span class="literal">false</span>,</span><br><span class="line">  localAddress: <span class="literal">null</span>,</span><br><span class="line">  <span class="comment">// options for Node.js / React Native</span></span><br><span class="line">  extraHeaders: &#123;&#125;,</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="From-a-different-domain"><a href="#From-a-different-domain" class="headerlink" title="From a different domain"></a>From a different domain</h2><p>In case your front is not served from the same domain as your server, you have to pass the URL of your server.</p>
+<p>如果您的前台与服务器不在同一个域中，则必须传递服务器的URL。</p>
+<h2 id="Custom-namespace"><a href="#Custom-namespace" class="headerlink" title="Custom namespace"></a>Custom namespace</h2><p>In the examples above, the client will connect to the default namespace. Using only the default namespace should be sufficient for most use cases, but you can specify the namespace with:</p>
+<p>在上面的示例中，客户端将连接到默认名称空间。 在大多数情况下，仅使用默认名称空间就足够了，但是您可以通过以下方式指定名称空间：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// same origin version</span></span><br><span class="line"><span class="keyword">const</span> socket = io(<span class="string">'/admin'</span>);</span><br><span class="line"><span class="comment">// cross origin version</span></span><br><span class="line"><span class="keyword">const</span> socket = io(<span class="string">'https://server-domain.com/admin'</span>);</span><br></pre></td></tr></table></figure>
+
+<p>You can find more details about namespaces <a href="https://socket.io/docs/namespaces/" target="_blank" rel="noopener">here</a>.</p>
+<h2 id="Notable-options"><a href="#Notable-options" class="headerlink" title="Notable options"></a>Notable options</h2><h3 id="transports-option"><a href="#transports-option" class="headerlink" title="transports option"></a><code>transports</code> option</h3><p>By default, the client will try to establish a WebSocket connection, and fall back to XHR/JSONP polling.</p>
+<p>If you are sure the WebSocket connection will succeed, you can disable the polling transport:</p>
+<p>默认情况下，客户端将尝试建立WebSocket连接，并回退到XHR / JSONP轮询。</p>
+<p>如果确定WebSocket连接将成功，则可以禁用轮询传输：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> socket = io(&#123;</span><br><span class="line">  transports: [<span class="string">'websocket'</span>]</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>In that case, due to the nature of the WebSocket connection, you can have several server instances without sticky sessions. More information <a href="https://socket.io/docs/using-multiple-nodes/" target="_blank" rel="noopener">here</a>.</p>
+<p>在这种情况下，由于WebSocket连接的性质，您可以有多个服务器实例而没有粘性会话。 更多信息在这里。</p>
+<p>Caught a mistake? Edit this page on <a href="https://github.com/socketio/socket.io-website/blob/master/source/docs/client-initialization.md" target="_blank" rel="noopener">GitHub</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/08/30/Socket.io/client/2.%20Initialization/" data-id="ckejc3t6l0004vcxngbkp7f2i" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2020/08/30/Socket.io/client/3.%20Connection%20lifecycle/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Socket.io/client/3. Connection lifecycle
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2020/08/30/Socket.io/client/1.%20Installation/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Socket.io/client/1. Installation</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/GridManager/" rel="tag">GridManager</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux-%E4%B8%BA%E7%9F%A5%E7%AC%94%E8%AE%B0/" rel="tag">Linux 为知笔记</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/GridManager/" style="font-size: 10px;">GridManager</a> <a href="/tags/Linux-%E4%B8%BA%E7%9F%A5%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">Linux 为知笔记</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">August 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">June 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">May 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/08/30/Socket.io/client/3.%20Connection%20lifecycle/">Socket.io/client/3. Connection lifecycle</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/30/Socket.io/client/2.%20Initialization/">Socket.io/client/2. Initialization</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/30/Socket.io/client/1.%20Installation/">Socket.io/client/1. Installation</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/30/Socket.io/server/5.%20Using%20multiple%20nodes/">Socket.io/server/5. Using multiple nodes</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/30/Socket.io/server/4.%20Rooms/">Socket.io/server/4. Rooms</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

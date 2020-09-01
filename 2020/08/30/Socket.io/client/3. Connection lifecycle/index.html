@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Socket.io/client/3. Connection lifecycle | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Connection statusOn the client-side, the connected attribute of the Socket object returns the current state of the connection: 在客户端，Socket对象的connected属性返回连接的当前状态： 12345678910111213import io from &#39;sock">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Socket.io&#x2F;client&#x2F;3. Connection lifecycle">
+<meta property="og:url" content="http://yoursite.com/2020/08/30/Socket.io/client/3.%20Connection%20lifecycle/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Connection statusOn the client-side, the connected attribute of the Socket object returns the current state of the connection: 在客户端，Socket对象的connected属性返回连接的当前状态： 12345678910111213import io from &#39;sock">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://socket.io/images/client_connection_lifecycle.png">
+<meta property="article:published_time" content="2020-08-30T07:07:23.267Z">
+<meta property="article:modified_time" content="2020-08-30T07:14:58.007Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://socket.io/images/client_connection_lifecycle.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">LilyMeng's Blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a class="nav-icon" style="width: 46px" href="https://github.com/liyuan-meng" target="_blank">Github</a>
+        
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-Socket.io/client/3. Connection lifecycle" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/08/30/Socket.io/client/3.%20Connection%20lifecycle/" class="article-date">
+  <time datetime="2020-08-30T07:07:23.267Z" itemprop="datePublished">2020-08-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Socket.io/client/3. Connection lifecycle
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Connection-status"><a href="#Connection-status" class="headerlink" title="Connection status"></a>Connection status</h2><p>On the client-side, the <code>connected</code> attribute of the Socket object returns the current state of the connection:</p>
+<p>在客户端，Socket对象的connected属性返回连接的当前状态：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> io <span class="keyword">from</span> <span class="string">'socket.io-client'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> socket = io();</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(socket.connected); <span class="comment">// false</span></span><br><span class="line"></span><br><span class="line">socket.on(<span class="string">'connect'</span>, () =&gt; &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(socket.connected); <span class="comment">// true</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">socket.on(<span class="string">'disconnect'</span>, () =&gt; &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(socket.connected); <span class="comment">// false</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Lifecycle-diagram"><a href="#Lifecycle-diagram" class="headerlink" title="Lifecycle diagram"></a>Lifecycle diagram</h2><p>Below is a diagram of the socket lifecycle. It includes the different events emitted by the socket.</p>
+<p>下面是套接字生命周期的图表。 它包括套接字发出的不同事件。</p>
+<p><img src="https://socket.io/images/client_connection_lifecycle.png" alt="Lifecycle diagram"></p>
+<h2 id="Events"><a href="#Events" class="headerlink" title="Events"></a>Events</h2><p>This is the list of events that can be emitted by the Socket object.</p>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>connect</td>
+<td>Fired upon connection (including a successful reconnection)</td>
+</tr>
+<tr>
+<td>disconnect</td>
+<td>Fired upon disconnection</td>
+</tr>
+<tr>
+<td>connect_error</td>
+<td>Fired upon a connection error</td>
+</tr>
+<tr>
+<td>connect_timeout</td>
+<td>Fired upon a connection timeout</td>
+</tr>
+<tr>
+<td>reconnect_attempt</td>
+<td>Fired upon an attempt to reconnect</td>
+</tr>
+<tr>
+<td>reconnect_error</td>
+<td>Fired upon a reconnection attempt error</td>
+</tr>
+<tr>
+<td>reconnect_failed</td>
+<td>Fired when the client couldn’t reconnect within <code>reconnectionAttempts</code></td>
+</tr>
+<tr>
+<td>reconnecting</td>
+<td>Alias for “reconnect_attempt”</td>
+</tr>
+<tr>
+<td>reconnect</td>
+<td>Fired upon a successful reconnection</td>
+</tr>
+<tr>
+<td>ping</td>
+<td>Fired when a ping is sent to the server</td>
+</tr>
+<tr>
+<td>pong</td>
+<td>Fired when a pong is received from the server</td>
+</tr>
+</tbody></table>
+<p>Please note that you can’t reuse those event names in your application:</p>
+<p>请注意，您无法在应用程序中重复使用这些事件名称：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">socket.emit(<span class="string">'reconnect_attempt'</span>); <span class="comment">// WARNING: will be silently discarded</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Reconnection（重新连线）"><a href="#Reconnection（重新连线）" class="headerlink" title="Reconnection（重新连线）"></a>Reconnection（重新连线）</h2><p>By default, the client will try to reconnect forever.</p>
+<p>Here is the default configuration:</p>
+<p>默认情况下，客户端将尝试永久重新连接。</p>
+<p>这是默认配置：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> socket = io(&#123;</span><br><span class="line">  reconnection: <span class="literal">true</span>,             <span class="comment">// whether to reconnect automatically</span></span><br><span class="line">  reconnectionAttempts: <span class="literal">Infinity</span>, <span class="comment">// number of reconnection attempts before giving up</span></span><br><span class="line">  reconnectionDelay: <span class="number">1000</span>,        <span class="comment">// how long to initially wait before attempting a new 		      reconnection</span></span><br><span class="line">  reconnectionDelayMax: <span class="number">5000</span>,     <span class="comment">// maximum amount of time to wait between reconnection attempts. Each attempt increases the reconnection delay by 2x along with a randomization factor</span></span><br><span class="line">  randomizationFactor: <span class="number">0.5</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>Delay between two consecutive attempts:</p>
+<ul>
+<li>1st attempt: <code>1000 +/- 500 ms</code></li>
+<li>2nd attempt: <code>2000 +/- 1000 ms</code></li>
+<li>3nd attempt: <code>4000 +/- 2000 ms</code></li>
+<li>following attempts: <code>5000 +/- 2500 ms</code></li>
+</ul>
+<p>The randomization factor helps smooth the load induced by the reconnection attempts of multiple clients, in case a server goes down.</p>
+<p>Sample lifecycle:</p>
+<p>两次连续尝试之间的延迟：</p>
+<ul>
+<li><p>第一次尝试：1000 +/- 500毫秒</p>
+</li>
+<li><p>第二次尝试：2000 +/- 1000毫秒</p>
+</li>
+<li><p>第三次尝试：4000 +/- 2000毫秒</p>
+</li>
+<li><p>以下尝试：5000 +/- 2500毫秒</p>
+</li>
+</ul>
+<p>如果服务器发生故障，随机因素有助于平滑由多个客户端的重新连接尝试引起的负载。</p>
+<p>样本生命周期：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">- connect            // the client successfully establishes a connection to the server.</span><br><span class="line">- disconnect         // some bad thing happens (the server crashes, for example).</span><br><span class="line">- reconnect_attempt  // after a given delay, the client tries to reconnect.</span><br><span class="line">- reconnect_error    // the first attempt fails.</span><br><span class="line">- reconnect_attempt  // after a given delay, the client tries to reconnect again</span><br><span class="line">- connect            // the client successfully restore the connection to the server</span><br></pre></td></tr></table></figure>
+
+<p>Example with <code>reconnectionAttempts: 3</code>:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">- connect            // the client successfully establishes a connection to the server</span><br><span class="line">- disconnect         // some bad thing happens (the client goes offline, for example)</span><br><span class="line">- reconnect_attempt  // after a given delay, the client tries to reconnect</span><br><span class="line">- reconnect_error    // the first attempt fails</span><br><span class="line">- reconnect_attempt  // after a given delay, the client tries to reconnect</span><br><span class="line">- reconnect_error    // the second attempt fails</span><br><span class="line">- reconnect_attempt  // after a given delay, the client tries to reconnect</span><br><span class="line">- reconnect_error    // the third attempt fails</span><br><span class="line">- reconnect_failed   // the client won't try to reconnect anymore</span><br></pre></td></tr></table></figure>
+
+<h2 id="Disabling-the-default-reconnection-logic（禁用默认的重新连接逻辑）"><a href="#Disabling-the-default-reconnection-logic（禁用默认的重新连接逻辑）" class="headerlink" title="Disabling the default reconnection logic（禁用默认的重新连接逻辑）"></a>Disabling the default reconnection logic（禁用默认的重新连接逻辑）</h2><p>Reconnection can be disabled, in case you want to provide your own reconnection logic:</p>
+<p>如果您想提供自己的重新连接逻辑，则可以禁用重新连接：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> socket = io(&#123;</span><br><span class="line">  reconnection: <span class="literal">false</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">socket.on(<span class="string">'connect_error'</span>, () =&gt; &#123;</span><br><span class="line">  setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    socket.connect();</span><br><span class="line">  &#125;, <span class="number">2000</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">socket.on(<span class="string">'disconnect'</span>, () =&gt; &#123;</span><br><span class="line">  setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    socket.connect();</span><br><span class="line">  &#125;, <span class="number">500</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>Caught a mistake? Edit this page on <a href="https://github.com/socketio/socket.io-website/blob/master/source/docs/client-connection-lifecycle.md" target="_blank" rel="noopener">GitHub</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/08/30/Socket.io/client/3.%20Connection%20lifecycle/" data-id="ckejc3t6l0005vcxn6yv9gmdh" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2020/08/30/Socket.io/client/2.%20Initialization/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Socket.io/client/2. Initialization</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/GridManager/" rel="tag">GridManager</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux-%E4%B8%BA%E7%9F%A5%E7%AC%94%E8%AE%B0/" rel="tag">Linux 为知笔记</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/GridManager/" style="font-size: 10px;">GridManager</a> <a href="/tags/Linux-%E4%B8%BA%E7%9F%A5%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">Linux 为知笔记</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">August 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">June 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">May 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/08/30/Socket.io/client/3.%20Connection%20lifecycle/">Socket.io/client/3. Connection lifecycle</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/30/Socket.io/client/2.%20Initialization/">Socket.io/client/2. Initialization</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/30/Socket.io/client/1.%20Installation/">Socket.io/client/1. Installation</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/30/Socket.io/server/5.%20Using%20multiple%20nodes/">Socket.io/server/5. Using multiple nodes</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/30/Socket.io/server/4.%20Rooms/">Socket.io/server/4. Rooms</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

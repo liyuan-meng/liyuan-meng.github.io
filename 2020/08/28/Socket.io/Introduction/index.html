@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Socket.io/Introduction | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="In this guide we’ll create a basic chat application. It requires almost no basic prior knowledge of Node.JS or Socket.IO, so it’s ideal for users of all knowledge levels. 在本指南中，我们将创建一个基本的聊天应用程序。 它几乎不需">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Socket.io&#x2F;Introduction">
+<meta property="og:url" content="http://yoursite.com/2020/08/28/Socket.io/Introduction/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="In this guide we’ll create a basic chat application. It requires almost no basic prior knowledge of Node.JS or Socket.IO, so it’s ideal for users of all knowledge levels. 在本指南中，我们将创建一个基本的聊天应用程序。 它几乎不需">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-08-28T03:22:40.716Z">
+<meta property="article:modified_time" content="2020-08-28T07:33:00.495Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">LilyMeng's Blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a class="nav-icon" style="width: 46px" href="https://github.com/liyuan-meng" target="_blank">Github</a>
+        
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-Socket.io/Introduction" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/08/28/Socket.io/Introduction/" class="article-date">
+  <time datetime="2020-08-28T03:22:40.716Z" itemprop="datePublished">2020-08-28</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Socket.io/Introduction
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>In this guide we’ll create a basic chat application. It requires almost no basic prior knowledge of Node.JS or Socket.IO, so it’s ideal for users of all knowledge levels.</p>
+<p>在本指南中，我们将创建一个基本的聊天应用程序。 它几乎不需要Node.JS或Socket.IO的基础知识，因此非常适合所有知识水平的用户。</p>
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>Writing a chat application with popular web applications stacks like LAMP (PHP) has normally been very hard. It involves polling the server for changes, keeping track of timestamps, and it’s a lot slower than it should be.</p>
+<p>Sockets have traditionally been the solution around which most real-time chat systems are architected, providing a bi-directional communication channel between a client and a server.</p>
+<p>This means that the server can push messages to clients. Whenever you write a chat message, the idea is that the server will get it and push it to all other connected clients.</p>
+<p>使用LAMP（PHP）等流行的Web应用程序堆栈编写聊天应用程序通常非常困难。 它涉及轮询服务器的更改，跟踪时间戳，并且比预期的要慢得多。</p>
+<p>传统上，套接字是构建大多数实时聊天系统的解决方案，可在客户端和服务器之间提供双向通信通道。</p>
+<p>这意味着服务器可以将消息推送到客户端。 每当您编写聊天消息时，其想法都是服务器将获得该消息并将其推送到所有其他已连接的客户端。</p>
+<h2 id="The-web-framework"><a href="#The-web-framework" class="headerlink" title="The web framework"></a>The web framework</h2><p>The first goal is to set up a simple HTML webpage that serves out a form and a list of messages. We’re going to use the Node.JS web framework <code>express</code> to this end. Make sure <a href="https://nodejs.org/" target="_blank" rel="noopener">Node.JS</a> is installed.</p>
+<p>First let’s create a <code>package.json</code> manifest file that describes our project. I recommend you place it in a dedicated empty directory (I’ll call mine <code>chat-example</code>).</p>
+<p>第一个目标是建立一个简单的HTML网页，以提供表单和消息列表。 为此，我们将使用Node.JS网络框架<code>express</code>。 确保已安装[Node.JS]（<a href="https://nodejs.org/）。" target="_blank" rel="noopener">https://nodejs.org/）。</a></p>
+<p>首先，我们创建一个描述我们项目的package.json清单文件。 我建议您将其放在专用的空白目录中（我将其称为“聊天示例”）。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="string">"name"</span>: <span class="string">"socket-chat-example"</span>,</span><br><span class="line">  <span class="string">"version"</span>: <span class="string">"0.0.1"</span>,</span><br><span class="line">  <span class="string">"description"</span>: <span class="string">"my first socket.io app"</span>,</span><br><span class="line">  <span class="string">"dependencies"</span>: &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Now, in order to easily populate the <code>dependencies</code> property with the things we need, we’ll use <code>npm install</code>:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install express@4.15.2</span><br></pre></td></tr></table></figure>
+
+<p>Once it’s installed we can create an <code>index.js</code> file that will set up our application.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> app = <span class="built_in">require</span>(<span class="string">'express'</span>)();</span><br><span class="line"><span class="keyword">var</span> http = <span class="built_in">require</span>(<span class="string">'http'</span>).createServer(app);</span><br><span class="line"></span><br><span class="line">app.get(<span class="string">'/'</span>, (req, res) =&gt; &#123;</span><br><span class="line">  res.send(<span class="string">'&lt;h1&gt;Hello world&lt;/h1&gt;'</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">http.listen(<span class="number">3000</span>, () =&gt; &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'listening on *:3000'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>This means that it:</p>
+<ul>
+<li>Express initializes <code>app</code> to be a function handler that you can supply to an HTTP server (as seen in line 2).</li>
+<li>We define a route handler <code>/</code> that gets called when we hit our website home.</li>
+<li>We make the http server listen on port 3000.</li>
+</ul>
+<p>If you run <code>node index.js</code> you should see the following:</p>
+<p>这意味着：</p>
+<ul>
+<li>Express将<code>app</code>初始化为可以提供给HTTP服务器的函数处理程序（如第2行所示）。</li>
+<li>我们定义了一个路由处理程序<code>/</code>，当我们访问我们的网站首页时会调用它。</li>
+<li>我们使http服务器在端口3000上侦听。</li>
+</ul>
+<p>如果运行<code>node index.js</code>，您将看到以下内容：</p>
+<p>![image-20200828144327055](/Users/liyuanmeng/Library/Application Support/typora-user-images/image-20200828144327055.png)</p>
+<p>And if you point your browser to <code>http://localhost:3000</code>:</p>
+<p>![image-20200828144339554](/Users/liyuanmeng/Library/Application Support/typora-user-images/image-20200828144339554.png)</p>
+<h2 id="Serving-HTML"><a href="#Serving-HTML" class="headerlink" title="Serving HTML"></a>Serving HTML</h2><p>So far in index.js we’re calling res.send and passing it a string of HTML. Our code would look very confusing if we just placed our entire application’s HTML there, so instead we’re going to create a index.html file and serve that instead.</p>
+<p>Let’s refactor our route handler to use sendFile instead.</p>
+<p>到目前为止，在index.js中，我们正在调用res.send并将其传递为HTML字符串。 如果仅将整个应用程序的HTML放在此处，我们的代码就会看起来很混乱，因此，我们将创建一个index.html文件并将其提供。</p>
+<p>让我们重构路由处理程序，改为使用sendFile。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">app.get('/', (req, res) =&gt; &#123;</span><br><span class="line">  res.sendFile(__dirname + '/index.html');</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>Put the following in your <code>index.html</code> file:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!doctype <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>Socket.IO chat<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">style</span>&gt;</span></span><br><span class="line"><span class="css">      * &#123; <span class="attribute">margin</span>: <span class="number">0</span>; <span class="attribute">padding</span>: <span class="number">0</span>; <span class="attribute">box-sizing</span>: border-box; &#125;</span></span><br><span class="line"><span class="css">      <span class="selector-tag">body</span> &#123; <span class="attribute">font</span>: <span class="number">13px</span> Helvetica, Arial; &#125;</span></span><br><span class="line"><span class="css">      <span class="selector-tag">form</span> &#123; <span class="attribute">background</span>: <span class="number">#000</span>; <span class="attribute">padding</span>: <span class="number">3px</span>; <span class="attribute">position</span>: fixed; <span class="attribute">bottom</span>: <span class="number">0</span>; <span class="attribute">width</span>: <span class="number">100%</span>; &#125;</span></span><br><span class="line"><span class="css">      <span class="selector-tag">form</span> <span class="selector-tag">input</span> &#123; <span class="attribute">border</span>: <span class="number">0</span>; <span class="attribute">padding</span>: <span class="number">10px</span>; <span class="attribute">width</span>: <span class="number">90%</span>; <span class="attribute">margin-right</span>: <span class="number">0.5%</span>; &#125;</span></span><br><span class="line"><span class="css">      <span class="selector-tag">form</span> <span class="selector-tag">button</span> &#123; <span class="attribute">width</span>: <span class="number">9%</span>; <span class="attribute">background</span>: <span class="built_in">rgb</span>(<span class="number">130</span>, <span class="number">224</span>, <span class="number">255</span>); <span class="attribute">border</span>: none; <span class="attribute">padding</span>: <span class="number">10px</span>; &#125;</span></span><br><span class="line"><span class="css">      <span class="selector-id">#messages</span> &#123; <span class="attribute">list-style-type</span>: none; <span class="attribute">margin</span>: <span class="number">0</span>; <span class="attribute">padding</span>: <span class="number">0</span>; &#125;</span></span><br><span class="line"><span class="css">      <span class="selector-id">#messages</span> <span class="selector-tag">li</span> &#123; <span class="attribute">padding</span>: <span class="number">5px</span> <span class="number">10px</span>; &#125;</span></span><br><span class="line"><span class="css">      <span class="selector-id">#messages</span> <span class="selector-tag">li</span><span class="selector-pseudo">:nth-child(odd)</span> &#123; <span class="attribute">background</span>: <span class="number">#eee</span>; &#125;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">ul</span> <span class="attr">id</span>=<span class="string">"messages"</span>&gt;</span><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">""</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">"m"</span> <span class="attr">autocomplete</span>=<span class="string">"off"</span> /&gt;</span><span class="tag">&lt;<span class="name">button</span>&gt;</span>Send<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>If you restart the process (by hitting Control+C and running <code>node index.js</code> again) and refresh the page it should look like this:</p>
+<p>![image-20200828144033697](/Users/liyuanmeng/Library/Application Support/typora-user-images/image-20200828144033697.png)</p>
+<h2 id="Integrating-Socket-IO"><a href="#Integrating-Socket-IO" class="headerlink" title="Integrating Socket.IO"></a>Integrating Socket.IO</h2><p>Socket.IO is composed of two parts:</p>
+<ul>
+<li>A server that integrates with (or mounts on) the Node.JS HTTP Server <a href="https://github.com/socketio/socket.io" target="_blank" rel="noopener">socket.io</a></li>
+<li>A client library that loads on the browser side <a href="https://github.com/socketio/socket.io-client" target="_blank" rel="noopener">socket.io-client</a></li>
+</ul>
+<p>During development, <code>socket.io</code> serves the client automatically for us, as we’ll see, so for now we only have to install one module:</p>
+<p>Socket.IO由两部分组成：</p>
+<ul>
+<li><p>与Node.JS HTTP Server socket.io集成（或挂载）的服务器</p>
+</li>
+<li><p>在浏览器端加载的客户端库socket.io-client</p>
+</li>
+</ul>
+<p>如我们所见，在开发过程中，socket.io为我们自动为客户端提供服务，因此，现在我们只需要安装一个模块：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install socket.io</span><br></pre></td></tr></table></figure>
+
+<p>That will install the module and add the dependency to <code>package.json</code>. Now let’s edit <code>index.js</code> to add it:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> app = <span class="built_in">require</span>(<span class="string">'express'</span>)();</span><br><span class="line"><span class="keyword">var</span> http = <span class="built_in">require</span>(<span class="string">'http'</span>).createServer(app);</span><br><span class="line"><span class="keyword">var</span> io = <span class="built_in">require</span>(<span class="string">'socket.io'</span>)(http);</span><br><span class="line"></span><br><span class="line">app.get(<span class="string">'/'</span>, (req, res) =&gt; &#123;</span><br><span class="line">  res.sendFile(__dirname + <span class="string">'/index.html'</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">io.on(<span class="string">'connection'</span>, (socket) =&gt; &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'a user connected'</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">http.listen(<span class="number">3000</span>, () =&gt; &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'listening on *:3000'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>Notice that I initialize a new instance of <code>socket.io</code> by passing the <code>http</code> (the HTTP server) object. Then I listen on the <code>connection</code> event for incoming sockets and log it to the console.</p>
+<p>Now in index.html add the following snippet before the `` (end body tag):</p>
+<p>请注意，我通过传递http（HTTP服务器）对象来初始化socket.io的新实例。 然后，我侦听传入套接字的连接事件，并将其记录到控制台。</p>
+<p>现在在index.html中，在&lt;/ body&gt;（结束body标签）之前添加以下代码段：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"/socket.io/socket.io.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="actionscript">  <span class="keyword">var</span> socket = io();</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>That’s all it takes to load the <code>socket.io-client</code>, which exposes an <code>io</code> global (and the endpoint <code>GET /socket.io/socket.io.js</code>), and then connect.</p>
+<p>If you would like to use the local version of the client-side JS file, you can find it at <code>node_modules/socket.io-client/dist/socket.io.js</code>.</p>
+<p>Notice that I’m not specifying any URL when I call <code>io()</code>, since it defaults to trying to connect to the host that serves the page.</p>
+<p>If you now restart the process (by hitting Control+C and running <code>node index.js</code> again) and then refresh the webpage you should see the console print “a user connected”.</p>
+<p>Try opening several tabs, and you’ll see several messages.</p>
+<p>这就是加载socket.io-client的全部工作，它公开了一个io全局（和端点GET /socket.io/socket.io.js），然后进行连接。</p>
+<p>如果要使用客户端JS文件的本地版本，可以在node_modules / socket.io-client / dist / socket.io.js中找到它。</p>
+<p>请注意，我在调用io（）时未指定任何URL，因为它默认为尝试连接到为该页面提供服务的主机。</p>
+<p>如果现在重新启动该过程（通过单击Control + C并再次运行节点index.js），然后刷新网页，则应该看到控制台打印“用户已连接”。</p>
+<p>尝试打开多个标签，您会看到多则消息。</p>
+<p>![image-20200828151113781](/Users/liyuanmeng/Library/Application Support/typora-user-images/image-20200828151113781.png)</p>
+<p>Each socket also fires a special <code>disconnect</code> event:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">io.on(<span class="string">'connection'</span>, (socket) =&gt; &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'a user connected'</span>);</span><br><span class="line">  socket.on(<span class="string">'disconnect'</span>, () =&gt; &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'user disconnected'</span>);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>Then if you refresh a tab several times you can see it in action.![image-20200828151141285](/Users/liyuanmeng/Library/Application Support/typora-user-images/image-20200828151141285.png)</p>
+<h2 id="Emitting-events"><a href="#Emitting-events" class="headerlink" title="Emitting events"></a>Emitting events</h2><p>The main idea behind Socket.IO is that you can send and receive any events you want, with any data you want. Any objects that can be encoded as JSON will do, and <a href="https://socket.io/blog/introducing-socket-io-1-0/#binary" target="_blank" rel="noopener">binary data</a> is supported too.</p>
+<p>Let’s make it so that when the user types in a message, the server gets it as a <code>chat message</code> event. The <code>script</code> section in <code>index.html</code> should now look as follows:</p>
+<p>Socket.IO的主要思想是，您可以使用所需的任何数据发送和接收所需的任何事件。 任何可以被编码为JSON的对象都可以，并且也支持二进制数据。</p>
+<p>让我们做到这一点，以便用户输入消息时，服务器将其作为聊天消息事件来获取。 现在，index.html中的脚本部分应如下所示：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"/socket.io/socket.io.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"https://code.jquery.com/jquery-3.4.1.min.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">  $(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="actionscript">    <span class="keyword">var</span> socket = io();</span></span><br><span class="line"><span class="javascript">    $(<span class="string">'form'</span>).submit(<span class="function"><span class="keyword">function</span>(<span class="params">e</span>) </span>&#123;</span></span><br><span class="line"><span class="actionscript">      e.preventDefault(); <span class="comment">// prevents page reloading</span></span></span><br><span class="line"><span class="javascript">      socket.emit(<span class="string">'chat message'</span>, $(<span class="string">'#m'</span>).val());</span></span><br><span class="line"><span class="javascript">      $(<span class="string">'#m'</span>).val(<span class="string">''</span>);</span></span><br><span class="line"><span class="actionscript">      <span class="keyword">return</span> <span class="literal">false</span>;</span></span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;);</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>And in <code>index.js</code> we print out the <code>chat message</code> event:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">io.on(<span class="string">'connection'</span>, (socket) =&gt; &#123;</span><br><span class="line">  socket.on(<span class="string">'chat message'</span>, (msg) =&gt; &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'message: '</span> + msg);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>The result should be like the following video:</p>
+<p><video autoplay="" loop="" width="100%" style="color: rgb(85, 85, 85); font-family: &quot;Open Sans&quot;, sans-serif; font-size: 16px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration-style: initial; text-decoration-color: initial;"></video></p>
+<h2 id="Broadcasting"><a href="#Broadcasting" class="headerlink" title="Broadcasting"></a>Broadcasting</h2><p>The next goal is for us to emit the event from the server to the rest of the users.</p>
+<p>In order to send an event to everyone, Socket.IO gives us the <code>io.emit()</code> method.</p>
+<p>我们的下一个目标是将事件从服务器发送给其他用户。</p>
+<p>为了向所有人发送事件，Socket.IO提供了io.emit（）方法。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">io.emit(<span class="string">'some event'</span>, &#123; <span class="attr">someProperty</span>: <span class="string">'some value'</span>, <span class="attr">otherProperty</span>: <span class="string">'other value'</span> &#125;); <span class="comment">// This will emit the event to all connected socket</span></span><br></pre></td></tr></table></figure>
+
+<p>If you want to send a message to everyone except for a certain emitting socket, we have the <code>broadcast</code> flag for emitting from that socket:</p>
+<p>如果您想向除某个发射套接字之外的所有人发送消息，我们具有从该套接字发射的广播标志：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">io.on(<span class="string">'connection'</span>, (socket) =&gt; &#123;</span><br><span class="line">  socket.broadcast.emit(<span class="string">'hi'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>In this case, for the sake of simplicity we’ll send the message to everyone, including the sender.</p>
+<p>在这种情况下，为简单起见，我们会将邮件发送给所有人，包括发件人。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">io.on(<span class="string">'connection'</span>, (socket) =&gt; &#123;</span><br><span class="line">  socket.on(<span class="string">'chat message'</span>, (msg) =&gt; &#123;</span><br><span class="line">    io.emit(<span class="string">'chat message'</span>, msg);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>And on the client side when we capture a <code>chat message</code> event we’ll include it in the page. The <em>total</em> client-side JavaScript code now amounts to:</p>
+<p>在客户端，当我们捕获聊天消息事件时，会将其包括在页面中。 客户端JavaScript代码总数现在达到：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">  $(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="actionscript">    <span class="keyword">var</span> socket = io();</span></span><br><span class="line"><span class="javascript">    $(<span class="string">'form'</span>).submit(<span class="function"><span class="keyword">function</span>(<span class="params">e</span>)</span>&#123;</span></span><br><span class="line"><span class="actionscript">      e.preventDefault(); <span class="comment">// prevents page reloading</span></span></span><br><span class="line"><span class="javascript">      socket.emit(<span class="string">'chat message'</span>, $(<span class="string">'#m'</span>).val());</span></span><br><span class="line"><span class="javascript">      $(<span class="string">'#m'</span>).val(<span class="string">''</span>);</span></span><br><span class="line"><span class="actionscript">      <span class="keyword">return</span> <span class="literal">false</span>;</span></span><br><span class="line">    &#125;);</span><br><span class="line"><span class="actionscript">    socket.on(<span class="string">'chat message'</span>, <span class="function"><span class="keyword">function</span><span class="params">(msg)</span></span>&#123;</span></span><br><span class="line"><span class="javascript">      $(<span class="string">'#messages'</span>).append($(<span class="string">'&lt;li&gt;'</span>).text(msg));</span></span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;);</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>And that completes our chat application, in about 20 lines of code! This is what it looks like:</p>
+<p><video autoplay="" loop="" width="100%"></video></p>
+<h2 id="Homework"><a href="#Homework" class="headerlink" title="Homework"></a>Homework</h2><p>Here are some ideas to improve the application:</p>
+<ul>
+<li>Broadcast a message to connected users when someone connects or disconnects.</li>
+<li>Add support for nicknames.</li>
+<li>Don’t send the same message to the user that sent it. Instead, append the message directly as soon as he/she presses enter.</li>
+<li>Add “{user} is typing” functionality.</li>
+<li>Show who’s online.</li>
+<li>Add private messaging.</li>
+<li>Share your improvements!</li>
+</ul>
+<p>以下是一些改进应用程序的想法：</p>
+<ul>
+<li>当有人连接或断开连接时，向连接的用户广播消息。</li>
+<li>添加对昵称的支持。</li>
+<li>不要将相同的消息发送给发送该消息的用户。 而是，只要他/她按下Enter键，就直接添加消息。</li>
+<li>显示谁在线。</li>
+<li>添加私人消息。</li>
+<li>分享您的改进！</li>
+</ul>
+<h2 id="Getting-this-example"><a href="#Getting-this-example" class="headerlink" title="Getting this example"></a>Getting this example</h2><p>You can find it on GitHub <a href="https://github.com/socketio/chat-example" target="_blank" rel="noopener">here</a>.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https:&#x2F;&#x2F;github.com&#x2F;socketio&#x2F;chat-example.git</span><br></pre></td></tr></table></figure>
+
+<p>Caught a mistake? Edit this page on <a href="https://github.com/socketio/socket.io-website/blob/master/source/get-started/chat.md" target="_blank" rel="noopener">GitHub</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/08/28/Socket.io/Introduction/" data-id="ckejc3t6h0000vcxn6goc8hsq" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2020/08/30/Socket.io/Documentation/1.%20Introduction/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Socket.io/Documentation/1. Introduction
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2020/06/14/%E8%A7%A3%E5%86%B3-React-%E4%B8%AD%E7%9A%84-input-%E8%BE%93%E5%85%A5%E6%A1%86%E5%9C%A8%E4%B8%AD%E6%96%87%E8%BE%93%E5%85%A5%E6%B3%95%E4%B8%8B%E7%9A%84-bug/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">解决 React 中的 input 输入框在中文输入法下的 bug</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/GridManager/" rel="tag">GridManager</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux-%E4%B8%BA%E7%9F%A5%E7%AC%94%E8%AE%B0/" rel="tag">Linux 为知笔记</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/GridManager/" style="font-size: 10px;">GridManager</a> <a href="/tags/Linux-%E4%B8%BA%E7%9F%A5%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">Linux 为知笔记</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">August 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">June 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">May 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/08/30/Socket.io/client/3.%20Connection%20lifecycle/">Socket.io/client/3. Connection lifecycle</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/30/Socket.io/client/2.%20Initialization/">Socket.io/client/2. Initialization</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/30/Socket.io/client/1.%20Installation/">Socket.io/client/1. Installation</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/30/Socket.io/server/5.%20Using%20multiple%20nodes/">Socket.io/server/5. Using multiple nodes</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/30/Socket.io/server/4.%20Rooms/">Socket.io/server/4. Rooms</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Socket.io/server/3. Namespaces | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="A Namespace is a communication channel that allows you to split the logic of your application over a single shared connection. 命名空间是一个通信通道，它使您可以在单个共享连接上拆分应用程序的逻辑。  Possible use cases:  you want to cre">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Socket.io&#x2F;server&#x2F;3. Namespaces">
+<meta property="og:url" content="http://yoursite.com/2020/08/30/Socket.io/server/3.%20Namespaces/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="A Namespace is a communication channel that allows you to split the logic of your application over a single shared connection. 命名空间是一个通信通道，它使您可以在单个共享连接上拆分应用程序的逻辑。  Possible use cases:  you want to cre">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://socket.io/images/namespaces.png">
+<meta property="article:published_time" content="2020-08-30T02:57:39.095Z">
+<meta property="article:modified_time" content="2020-08-30T09:00:44.597Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://socket.io/images/namespaces.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">LilyMeng's Blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a class="nav-icon" style="width: 46px" href="https://github.com/liyuan-meng" target="_blank">Github</a>
+        
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-Socket.io/server/3. Namespaces" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/08/30/Socket.io/server/3.%20Namespaces/" class="article-date">
+  <time datetime="2020-08-30T02:57:39.095Z" itemprop="datePublished">2020-08-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Socket.io/server/3. Namespaces
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>A Namespace is a communication channel that allows you to split the logic of your application over a single shared connection.</p>
+<p>命名空间是一个通信通道，它使您可以在单个共享连接上拆分应用程序的逻辑。</p>
+<p><img src="https://socket.io/images/namespaces.png" alt="Namespace diagram"></p>
+<p>Possible use cases:</p>
+<ul>
+<li>you want to create an admin namespace that only authorized users have access to, so the logic related to those users is separated from the rest of the application</li>
+</ul>
+<p>可能的用例：</p>
+<ul>
+<li>您想要创建仅授权用户有权访问的管理名称空间，因此与这些用户相关的逻辑与应用程序的其余部分分开</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> adminNamespace = io.of(<span class="string">'/admin'</span>);</span><br><span class="line"></span><br><span class="line">adminNamespace.use(<span class="function">(<span class="params">socket, next</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="comment">// ensure the user has sufficient rights</span></span><br><span class="line">  next();</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">adminNamespace.on(<span class="string">'connection'</span>, socket =&gt; &#123;</span><br><span class="line">  socket.on(<span class="string">'delete user'</span>, () =&gt; &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>your application has multiple tenants so you want to dynamically create one namespace per tenant</li>
+<li>您的应用程序有多个租户，因此您想为每个租户动态创建一个命名空间</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> workspaces = io.of(<span class="regexp">/^\/\w+$/</span>);</span><br><span class="line"></span><br><span class="line">workspaces.on(<span class="string">'connection'</span>, socket =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> workspace = socket.nsp;</span><br><span class="line"></span><br><span class="line">  workspace.emit(<span class="string">'hello'</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// this middleware will be assigned to each namespace</span></span><br><span class="line">workspaces.use(<span class="function">(<span class="params">socket, next</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="comment">// ensure the user has access to the workspace</span></span><br><span class="line">  next();</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Default-namespace"><a href="#Default-namespace" class="headerlink" title="Default namespace"></a>Default namespace</h2><p>We call the default namespace <code>/</code> and it’s the one Socket.IO clients connect to by default, and the one the server listens to by default.</p>
+<p>This namespace is identified by <code>io.sockets</code> or simply <code>io</code>:</p>
+<p>我们将默认名称空间称为/，它是一个默认连接的Socket.IO客户端，一个默认情况下服务器监听的名称空间。</p>
+<p>该名称空间由io.sockets或仅由io标识：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// the following two will emit to all the sockets connected to `/`</span></span><br><span class="line">io.sockets.emit(<span class="string">'hi'</span>, <span class="string">'everyone'</span>);</span><br><span class="line">io.emit(<span class="string">'hi'</span>, <span class="string">'everyone'</span>); <span class="comment">// short form</span></span><br></pre></td></tr></table></figure>
+
+<p>Each namespace emits a <code>connection</code> event that receives each <code>Socket</code> instance as a parameter</p>
+<p>每个名称空间都发出一个连接事件，该事件接收每个Socket实例作为参数</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">io.on(<span class="string">'connection'</span>, socket =&gt; &#123;</span><br><span class="line">  socket.on(<span class="string">'disconnect'</span>, () =&gt; &#123;&#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Custom-namespaces"><a href="#Custom-namespaces" class="headerlink" title="Custom namespaces"></a>Custom namespaces</h2><p>To set up a custom namespace, you can call the of function on the server-side:</p>
+<p>要设置自定义名称空间，可以在服务器端调用of函数：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> nsp = io.of(<span class="string">'/my-namespace'</span>);</span><br><span class="line"></span><br><span class="line">nsp.on(<span class="string">'connection'</span>, socket =&gt; &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'someone connected'</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">nsp.emit(<span class="string">'hi'</span>, <span class="string">'everyone!'</span>);</span><br></pre></td></tr></table></figure>
+
+<p>On the client side, you tell Socket.IO client to connect to that namespace:</p>
+<p>在客户端，您告诉Socket.IO客户端连接到该名称空间：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> socket = io(<span class="string">'/my-namespace'</span>);</span><br></pre></td></tr></table></figure>
+
+<p><strong>Important note:</strong> The namespace is an implementation detail of the Socket.IO protocol, and is not related to the actual URL of the underlying transport, which defaults to <code>/socket.io/…</code>.</p>
+<p>重要说明：名称空间是Socket.IO协议的实现细节，并且与基础传输的实际URL不相关，该URL默认为/socket.io/…。</p>
+<h2 id="Namespace-middleware（命名空间中间件）"><a href="#Namespace-middleware（命名空间中间件）" class="headerlink" title="Namespace middleware（命名空间中间件）"></a>Namespace middleware（命名空间中间件）</h2><p>A middleware is a function that gets executed for every incoming Socket, and receives as parameters the socket and a function to optionally defer execution to the next registered middleware. A Socket.IO middleware is very similar to what you can find in <a href="http://expressjs.com/en/guide/using-middleware.html" target="_blank" rel="noopener">Express</a>.</p>
+<p>中间件是为每个传入的Socket执行的函数，并接收该套接字和参数作为选择将执行推迟到下一个注册的中间件作为参数。 Socket.IO中间件与Express中非常相似。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// registers a middleware for the default namespace</span></span><br><span class="line">io.use(<span class="function">(<span class="params">socket, next</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (isValid(socket.request)) &#123;</span><br><span class="line">    next();</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    next(<span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'invalid'</span>));</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// registers a middleware for a custom namespace</span></span><br><span class="line">io.of(<span class="string">'/admin'</span>).use(<span class="keyword">async</span> (socket, next) =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> user = <span class="keyword">await</span> fetchUser(socket.handshake.query);</span><br><span class="line">  <span class="keyword">if</span> (user.isAdmin) &#123;</span><br><span class="line">    socket.user = user;</span><br><span class="line">    next();</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    next(<span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'forbidden'</span>));</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>You can register several middleware functions for the same namespace. They will be executed sequentially:</p>
+<p>您可以为同一名称空间注册多个中间件功能。 它们将按顺序执行：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">io.use(<span class="function">(<span class="params">socket, next</span>) =&gt;</span> &#123;</span><br><span class="line">  next();</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">io.use(<span class="function">(<span class="params">socket, next</span>) =&gt;</span> &#123;</span><br><span class="line">  next(<span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'thou shall not pass'</span>));</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">io.use(<span class="function">(<span class="params">socket, next</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="comment">// not executed, since the previous middleware has returned an error</span></span><br><span class="line">  next();</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Handling-middleware-error"><a href="#Handling-middleware-error" class="headerlink" title="Handling middleware error"></a>Handling middleware error</h2><p>If the <code>next</code> method is called with an Error object, the client will receive an <code>error</code> event.</p>
+<p>如果使用错误对象调用“下一个”方法，则客户端将收到一个“错误”事件。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> io <span class="keyword">from</span> <span class="string">'socket.io-client'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> socket = io();</span><br><span class="line"></span><br><span class="line">socket.on(<span class="string">'error'</span>, (reason) =&gt; &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(reason); <span class="comment">// prints the message associated with the error, e.g. "thou shall not pass" in the example above</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Compatibility-with-Express-middleware（与Express中间件的兼容性）"><a href="#Compatibility-with-Express-middleware（与Express中间件的兼容性）" class="headerlink" title="Compatibility with Express middleware（与Express中间件的兼容性）"></a>Compatibility with Express middleware（与Express中间件的兼容性）</h2><p>Most existing <a href="http://expressjs.com/en/resources/middleware.html" target="_blank" rel="noopener">Express middleware</a> modules should be compatible with Socket.IO, you just need a little wrapper function to make the method signatures match:</p>
+<p>大多数现有的Express中间件模块应与Socket.IO兼容，您只需要一个包装函数即可使方法签名匹配：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> wrap = <span class="function"><span class="params">middleware</span> =&gt;</span> <span class="function">(<span class="params">socket, next</span>) =&gt;</span> middleware(socket.request, &#123;&#125;, next);</span><br></pre></td></tr></table></figure>
+
+<p>The middleware functions that end the request-response cycle and do not call <code>next()</code> will not work though.</p>
+<p>Example with <a href="https://www.npmjs.com/package/express-session" target="_blank" rel="noopener">express-session</a>:</p>
+<p>但是，终止请求-响应周期并且不调用next（）的中间件函数将无法工作。</p>
+<p>快速会话示例：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> session = <span class="built_in">require</span>(<span class="string">'express-session'</span>);</span><br><span class="line"></span><br><span class="line">io.use(wrap(session(&#123; <span class="attr">secret</span>: <span class="string">'cats'</span> &#125;)));</span><br><span class="line"></span><br><span class="line">io.on(<span class="string">'connect'</span>, (socket) =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> session = socket.request.session;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>Example with <a href="http://www.passportjs.org/" target="_blank" rel="noopener">Passport</a>:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> session = <span class="built_in">require</span>(<span class="string">'express-session'</span>);</span><br><span class="line"><span class="keyword">const</span> passport = <span class="built_in">require</span>(<span class="string">'passport'</span>);</span><br><span class="line"></span><br><span class="line">io.use(wrap(session(&#123; <span class="attr">secret</span>: <span class="string">'cats'</span> &#125;)));</span><br><span class="line">io.use(wrap(passport.initialize()));</span><br><span class="line">io.use(wrap(passport.session()));</span><br><span class="line"></span><br><span class="line">io.use(<span class="function">(<span class="params">socket, next</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (socket.request.user) &#123;</span><br><span class="line">    next();</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    next(<span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'unauthorized'</span>))</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>A complete example with Passport can be found <a href="https://github.com/socketio/socket.io/tree/master/examples/passport-example" target="_blank" rel="noopener">here</a>.</p>
+<p>Caught a mistake? Edit this page on <a href="https://github.com/socketio/socket.io-website/blob/master/source/docs/namespaces.md" target="_blank" rel="noopener">GitHub</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/08/30/Socket.io/server/3.%20Namespaces/" data-id="ckejc3t6o0009vcxnh8pz9f4h" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2020/08/30/Socket.io/server/4.%20Rooms/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Socket.io/server/4. Rooms
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2020/08/30/Socket.io/server/2.%20Initialization/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Socket.io/server/2. Initialization</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/GridManager/" rel="tag">GridManager</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux-%E4%B8%BA%E7%9F%A5%E7%AC%94%E8%AE%B0/" rel="tag">Linux 为知笔记</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/GridManager/" style="font-size: 10px;">GridManager</a> <a href="/tags/Linux-%E4%B8%BA%E7%9F%A5%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">Linux 为知笔记</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">August 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">June 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">May 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/08/30/Socket.io/client/3.%20Connection%20lifecycle/">Socket.io/client/3. Connection lifecycle</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/30/Socket.io/client/2.%20Initialization/">Socket.io/client/2. Initialization</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/30/Socket.io/client/1.%20Installation/">Socket.io/client/1. Installation</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/30/Socket.io/server/5.%20Using%20multiple%20nodes/">Socket.io/server/5. Using multiple nodes</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/30/Socket.io/server/4.%20Rooms/">Socket.io/server/4. Rooms</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

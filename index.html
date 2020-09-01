@@ -64,10 +64,10 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-解决-React-中的-input-输入框在中文输入法下的-bug" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-Socket.io/client/3. Connection lifecycle" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2020/06/14/%E8%A7%A3%E5%86%B3-React-%E4%B8%AD%E7%9A%84-input-%E8%BE%93%E5%85%A5%E6%A1%86%E5%9C%A8%E4%B8%AD%E6%96%87%E8%BE%93%E5%85%A5%E6%B3%95%E4%B8%8B%E7%9A%84-bug/" class="article-date">
-  <time datetime="2020-06-14T15:09:03.000Z" itemprop="datePublished">2020-06-14</time>
+    <a href="/2020/08/30/Socket.io/client/3.%20Connection%20lifecycle/" class="article-date">
+  <time datetime="2020-08-30T07:07:23.267Z" itemprop="datePublished">2020-08-30</time>
 </a>
     
   </div>
@@ -78,7 +78,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/06/14/%E8%A7%A3%E5%86%B3-React-%E4%B8%AD%E7%9A%84-input-%E8%BE%93%E5%85%A5%E6%A1%86%E5%9C%A8%E4%B8%AD%E6%96%87%E8%BE%93%E5%85%A5%E6%B3%95%E4%B8%8B%E7%9A%84-bug/">解决 React 中的 input 输入框在中文输入法下的 bug</a>
+      <a class="article-title" href="/2020/08/30/Socket.io/client/3.%20Connection%20lifecycle/">Socket.io/client/3. Connection lifecycle</a>
     </h1>
   
 
@@ -86,72 +86,113 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>以下会涉及到的技术点：react mobx compositionstart compositionupdate compositionend</p>
-<h3 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h3><p>在使用 input 时，通常会对输入的内容做校验，校验的方式无非两种：</p>
-<ol>
-<li>允许用户输入，并且做错误提示；</li>
-<li>不允许用户输入正则或者函数匹配到的字符。</li>
-</ol>
-<p>现有如下需求：“仅允许输入英文、数字和汉字，不允许输入其他特殊字符和符号”。显然这种场景需要使用第二种校验方式。</p>
-<p>然后我自以为很机智的写了下面的代码（引入了组件库 cloud-react），在输入值变化的时候（onChange 事件），处理绑定到 input 上的 value，将除了英文、数字、和汉字之外的字符都替换成空字符串。</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">CompositionDemo</span> <span class="keyword">extends</span> <span class="title">Component</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>() &#123;</span><br><span class="line">     <span class="keyword">this</span>.state = &#123;</span><br><span class="line">       value: <span class="string">''</span></span><br><span class="line">     &#125;;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  onChange(evt) &#123;</span><br><span class="line">     <span class="keyword">this</span>.setState(&#123;</span><br><span class="line">       value: evt.target.value.replace(<span class="regexp">/[^a-zA-Z0-9\u4E00-\u9FA5]/g</span>, <span class="string">''</span>)</span><br><span class="line">     &#125;);</span><br><span class="line">  &#125;;</span><br><span class="line">  </span><br><span class="line">  render() &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">Input</span></span></span></span><br><span class="line"><span class="xml">        onChange=&#123;this.onChange.bind(this)&#125;</span></span><br><span class="line"><span class="xml">      	value=&#123;this.state.value&#125;</span></span><br><span class="line"><span class="xml">   	/&gt;</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        <h2 id="Connection-status"><a href="#Connection-status" class="headerlink" title="Connection status"></a>Connection status</h2><p>On the client-side, the <code>connected</code> attribute of the Socket object returns the current state of the connection:</p>
+<p>在客户端，Socket对象的connected属性返回连接的当前状态：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> io <span class="keyword">from</span> <span class="string">'socket.io-client'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> socket = io();</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(socket.connected); <span class="comment">// false</span></span><br><span class="line"></span><br><span class="line">socket.on(<span class="string">'connect'</span>, () =&gt; &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(socket.connected); <span class="comment">// true</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">socket.on(<span class="string">'disconnect'</span>, () =&gt; &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(socket.connected); <span class="comment">// false</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
 
-<p>平平常常，普普通通，一切看起来都是正常的操作，结果，当我输入拼音的时候，神奇的事情发生了：连拼的时候除了最后一个字，前面的都变成了字符。</p>
-<p>what??? 小问号，你是否有很多朋友？</p>
-<p>于是，我踏上了一条不归路，呸呸呸，是打开了新世界的大门，就是这个门对于我来说可能有点沉，推了两天才看到新世界。</p>
-<p>纠其原因：拼音输入是一个过程，确切的说，在这个过程中，你输入的每一个字母都触发了 onChange 事件，而你输入过程中的这个产物在校验中被吃掉了，留下了一坨空字符串，所以就发生了上面那个神奇的现象。</p>
-<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><p>这里需要用到两个属性：</p>
-<p> <a href="https://developer.mozilla.org/zh-CN/docs/Web/Events/compositionstart" target="_blank" rel="noopener">compositionstart</a></p>
-<p> <a href="https://developer.mozilla.org/zh-CN/docs/Web/Events/compositionend" target="_blank" rel="noopener">compositionend</a></p>
-<p>简单点来说，就是当你开始使用输入法进行新的输入的时候，会触发 compositionstart ，中间过程其实也有一个函数 compositionupdate，顾名思义，输入更新时会触发它；当结束输入法输入的时候，会触发  compositionend。</p>
-<p>下面进入正题：</p>
-<p>首先，我们先看一下 Input 组件的一个很正常的实现：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> React, &#123; Component &#125; <span class="keyword">from</span> <span class="string">'react'</span>;</span><br><span class="line"><span class="keyword">import</span> PropTypes <span class="keyword">from</span> <span class="string">'prop-types'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">InputDemo1</span> <span class="keyword">extends</span> <span class="title">Component</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">constructor</span>(props) &#123;</span><br><span class="line">        <span class="keyword">super</span>(props);</span><br><span class="line">        <span class="keyword">this</span>.state = &#123;</span><br><span class="line">            value: <span class="string">''</span>,</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">static</span> getDerivedStateFromProps(&#123; value &#125;, &#123; <span class="attr">value</span>: preValue &#125;) &#123;</span><br><span class="line">        <span class="keyword">if</span> (value !== preValue) &#123;</span><br><span class="line">            <span class="keyword">return</span> &#123; value &#125;;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    onChange = <span class="function"><span class="params">evt</span> =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">this</span>.props.onChange(evt);</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    render() &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">input</span></span></span></span><br><span class="line"><span class="xml">            value=&#123;this.state.value&#125;</span></span><br><span class="line"><span class="xml">            type="text"</span></span><br><span class="line"><span class="xml">            onChange=&#123;this.onChange&#125;</span></span><br><span class="line"><span class="xml">        /&gt;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Lifecycle-diagram"><a href="#Lifecycle-diagram" class="headerlink" title="Lifecycle diagram"></a>Lifecycle diagram</h2><p>Below is a diagram of the socket lifecycle. It includes the different events emitted by the socket.</p>
+<p>下面是套接字生命周期的图表。 它包括套接字发出的不同事件。</p>
+<p><img src="https://socket.io/images/client_connection_lifecycle.png" alt="Lifecycle diagram"></p>
+<h2 id="Events"><a href="#Events" class="headerlink" title="Events"></a>Events</h2><p>This is the list of events that can be emitted by the Socket object.</p>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>connect</td>
+<td>Fired upon connection (including a successful reconnection)</td>
+</tr>
+<tr>
+<td>disconnect</td>
+<td>Fired upon disconnection</td>
+</tr>
+<tr>
+<td>connect_error</td>
+<td>Fired upon a connection error</td>
+</tr>
+<tr>
+<td>connect_timeout</td>
+<td>Fired upon a connection timeout</td>
+</tr>
+<tr>
+<td>reconnect_attempt</td>
+<td>Fired upon an attempt to reconnect</td>
+</tr>
+<tr>
+<td>reconnect_error</td>
+<td>Fired upon a reconnection attempt error</td>
+</tr>
+<tr>
+<td>reconnect_failed</td>
+<td>Fired when the client couldn’t reconnect within <code>reconnectionAttempts</code></td>
+</tr>
+<tr>
+<td>reconnecting</td>
+<td>Alias for “reconnect_attempt”</td>
+</tr>
+<tr>
+<td>reconnect</td>
+<td>Fired upon a successful reconnection</td>
+</tr>
+<tr>
+<td>ping</td>
+<td>Fired when a ping is sent to the server</td>
+</tr>
+<tr>
+<td>pong</td>
+<td>Fired when a pong is received from the server</td>
+</tr>
+</tbody></table>
+<p>Please note that you can’t reuse those event names in your application:</p>
+<p>请注意，您无法在应用程序中重复使用这些事件名称：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">socket.emit(<span class="string">'reconnect_attempt'</span>); <span class="comment">// WARNING: will be silently discarded</span></span><br></pre></td></tr></table></figure>
 
-<p>Input 组件有两种应用场景：</p>
-<ol>
-<li>不受控的输入框：业务方不给组件传入 value，无法控制输入框的值；</li>
-<li>受控的输入框：业务方可以通过给组件传入 value，从而可以在外部控制输入框的值。</li>
-</ol>
-<p>不受控的输入框在我使用过程中并没有什么 bug，此处不做赘述，此处只谈受控的输入框，也就是我们需求（仅允许输入英文、数字和汉字，不允许输入其他特殊字符和符号）中需要使用的场景。</p>
-<p>前面提到的 compositionstart 和 compositionend 该出场了：利用这两个属性的特点，在输入拼音的“过程中”不让 input 触发 onChange 事件，自然就不会触发校验，好了，既然有了思路，开始码代码。</p>
-<p>我们定义一个变量 isOnComposition 来判断是否在“过程中”</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">isOnComposition = <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">handleComposition = <span class="function"><span class="params">evt</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (evt.type === <span class="string">'compositionend'</span>) &#123;</span><br><span class="line">    <span class="keyword">this</span>.isOnComposition = <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">this</span>.isOnComposition = <span class="literal">true</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"> onChange = <span class="function"><span class="params">evt</span> =&gt;</span> &#123;</span><br><span class="line">   <span class="keyword">if</span> (!<span class="keyword">this</span>.isOnComposition) &#123;</span><br><span class="line">     <span class="keyword">this</span>.props.onChange(evt);</span><br><span class="line">   &#125;</span><br><span class="line"> &#125;;</span><br><span class="line"></span><br><span class="line">render() &#123;</span><br><span class="line">  <span class="keyword">const</span> commonProps = &#123;</span><br><span class="line">    onChange: <span class="keyword">this</span>.onChange,</span><br><span class="line">    onCompositionStart: <span class="keyword">this</span>.handleComposition,</span><br><span class="line">    onCompositionUpdate: <span class="keyword">this</span>.handleComposition,</span><br><span class="line">    onCompositionEnd: <span class="keyword">this</span>.handleComposition,</span><br><span class="line">  &#125;;</span><br><span class="line">  <span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">input</span></span></span></span><br><span class="line"><span class="xml">    value=&#123;this.state.value&#125;</span></span><br><span class="line"><span class="xml">    type="text"</span></span><br><span class="line"><span class="xml">  	&#123;...commonProps&#125;</span></span><br><span class="line"><span class="xml">  /&gt;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Reconnection（重新连线）"><a href="#Reconnection（重新连线）" class="headerlink" title="Reconnection（重新连线）"></a>Reconnection（重新连线）</h2><p>By default, the client will try to reconnect forever.</p>
+<p>Here is the default configuration:</p>
+<p>默认情况下，客户端将尝试永久重新连接。</p>
+<p>这是默认配置：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> socket = io(&#123;</span><br><span class="line">  reconnection: <span class="literal">true</span>,             <span class="comment">// whether to reconnect automatically</span></span><br><span class="line">  reconnectionAttempts: <span class="literal">Infinity</span>, <span class="comment">// number of reconnection attempts before giving up</span></span><br><span class="line">  reconnectionDelay: <span class="number">1000</span>,        <span class="comment">// how long to initially wait before attempting a new 		      reconnection</span></span><br><span class="line">  reconnectionDelayMax: <span class="number">5000</span>,     <span class="comment">// maximum amount of time to wait between reconnection attempts. Each attempt increases the reconnection delay by 2x along with a randomization factor</span></span><br><span class="line">  randomizationFactor: <span class="number">0.5</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
 
-<p>你以为就这么轻松解决了么？</p>
-<p>呵，你想多了！</p>
-<p>我仍然使用开篇那个 demo 来测试这个代码，发现事情又神奇了一点呢，这次拼音压根就输不进去了哇～</p>
-<p>我查看了下在输入拼音时函数的调用</p>
-<p>![image-20200615005541929](/Users/liyuanmeng/Library/Application Support/typora-user-images/image-20200615005541929.png)</p>
-<p>是的，宁没有看错，只触发了onCompositionstart 和 onCompositionupdate这两个函数，我起初以为是逻辑被我写扣圈了，想了想原因（其实我想了好久，人略笨，见笑）：</p>
-<p>罪魁祸首就是绑定在 input 上的那个 value，输入拼音的过程中，state.value 一直没变，input 中自然不会有任何输入值，没有输入值，也就完成不了输入过程，触发不了 compositionend，一直处于“过程中”。</p>
-<p>所以这次不是程序逻辑扣圈，是中断了。</p>
-<p>于是我又想如何把中断的程序接起来（对的，垮掉了我们就捡起来，哈），完成这个链条。</p>
-<p>我想了好多办法，也在网上看了好多办法，可惜都解决不了我的困境。</p>
-<p>各种心酸不堪回首，幸好最后找到了一个办法：其实想想原来代码中用 state.value 去控制 input 值的变化，还是没有把 input 中何时输入值的控制权放在自己手里，“过程中”这个概念也就失去了意义。只要 state.value 还和 input 绑在一起，就是我自己玩我自己的，人家玩人家的。于是，就有了下面让控制权回到我手中的代码。</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> React, &#123; Component, createRef &#125; <span class="keyword">from</span> <span class="string">'react'</span>;</span><br><span class="line"><span class="keyword">import</span> PropTypes <span class="keyword">from</span> <span class="string">'prop-types'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">InputDemo</span> <span class="keyword">extends</span> <span class="title">Component</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    inputRef = createRef();</span><br><span class="line"></span><br><span class="line">    isOnComposition = <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">    componentDidMount() &#123;</span><br><span class="line">        <span class="keyword">this</span>.setInputValue();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    componentDidUpdate() &#123;</span><br><span class="line">        <span class="keyword">this</span>.setInputValue();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    setInputValue = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">this</span>.inputRef.current.value = <span class="keyword">this</span>.props.value || <span class="string">''</span></span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    handleComposition = <span class="function"><span class="params">evt</span> =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (evt.type === <span class="string">'compositionend'</span>) &#123;</span><br><span class="line">            <span class="keyword">this</span>.isOnComposition = <span class="literal">false</span>;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">this</span>.isOnComposition = <span class="literal">true</span>;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    onChange = <span class="function"><span class="params">evt</span> =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="keyword">this</span>.isOnComposition) &#123;</span><br><span class="line">            <span class="keyword">this</span>.props.onChange(evt);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    render() &#123;</span><br><span class="line">        <span class="keyword">const</span> commonProps = &#123;</span><br><span class="line">            onChange: <span class="keyword">this</span>.onChange,</span><br><span class="line">            onCompositionStart: <span class="keyword">this</span>.handleComposition,</span><br><span class="line">            onCompositionUpdate: <span class="keyword">this</span>.handleComposition,</span><br><span class="line">            onCompositionEnd: <span class="keyword">this</span>.handleComposition,</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">input</span></span></span></span><br><span class="line"><span class="xml">            ref=&#123;this.inputRef&#125;</span></span><br><span class="line"><span class="xml">            type="text"</span></span><br><span class="line"><span class="xml">            &#123;...commonProps&#125;</span></span><br><span class="line"><span class="xml">        /&gt;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Delay between two consecutive attempts:</p>
+<ul>
+<li>1st attempt: <code>1000 +/- 500 ms</code></li>
+<li>2nd attempt: <code>2000 +/- 1000 ms</code></li>
+<li>3nd attempt: <code>4000 +/- 2000 ms</code></li>
+<li>following attempts: <code>5000 +/- 2500 ms</code></li>
+</ul>
+<p>The randomization factor helps smooth the load induced by the reconnection attempts of multiple clients, in case a server goes down.</p>
+<p>Sample lifecycle:</p>
+<p>两次连续尝试之间的延迟：</p>
+<ul>
+<li><p>第一次尝试：1000 +/- 500毫秒</p>
+</li>
+<li><p>第二次尝试：2000 +/- 1000毫秒</p>
+</li>
+<li><p>第三次尝试：4000 +/- 2000毫秒</p>
+</li>
+<li><p>以下尝试：5000 +/- 2500毫秒</p>
+</li>
+</ul>
+<p>如果服务器发生故障，随机因素有助于平滑由多个客户端的重新连接尝试引起的负载。</p>
+<p>样本生命周期：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">- connect            // the client successfully establishes a connection to the server.</span><br><span class="line">- disconnect         // some bad thing happens (the server crashes, for example).</span><br><span class="line">- reconnect_attempt  // after a given delay, the client tries to reconnect.</span><br><span class="line">- reconnect_error    // the first attempt fails.</span><br><span class="line">- reconnect_attempt  // after a given delay, the client tries to reconnect again</span><br><span class="line">- connect            // the client successfully restore the connection to the server</span><br></pre></td></tr></table></figure>
 
-<p>测了一下，大致上是没问题了。</p>
-<p>还要看一下谷歌浏览器和火狐浏览器，果然还有坑：</p>
-<ol>
-<li>火狐浏览器中的执行顺序：compositionstart compositionend onChange</li>
-<li>谷歌浏览器中的执行顺序：compositionstart onChange compositionend</li>
-</ol>
-<p>最后再做一下兼容处理，修改一下 handleComposition 函数</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">handleComposition = <span class="function"><span class="params">evt</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (evt.type === <span class="string">'compositionend'</span>) &#123;</span><br><span class="line">    <span class="keyword">this</span>.isOnComposition = <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 谷歌浏览器：compositionstart onChange compositionend</span></span><br><span class="line">    <span class="comment">// 火狐浏览器：compositionstart compositionend onChange</span></span><br><span class="line">    <span class="keyword">if</span> (navigator.userAgent.indexOf(<span class="string">'Chrome'</span>) &gt; <span class="number">-1</span>) &#123;</span><br><span class="line">      <span class="keyword">this</span>.onChange(evt);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">this</span>.isOnComposition = <span class="literal">true</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>Example with <code>reconnectionAttempts: 3</code>:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">- connect            // the client successfully establishes a connection to the server</span><br><span class="line">- disconnect         // some bad thing happens (the client goes offline, for example)</span><br><span class="line">- reconnect_attempt  // after a given delay, the client tries to reconnect</span><br><span class="line">- reconnect_error    // the first attempt fails</span><br><span class="line">- reconnect_attempt  // after a given delay, the client tries to reconnect</span><br><span class="line">- reconnect_error    // the second attempt fails</span><br><span class="line">- reconnect_attempt  // after a given delay, the client tries to reconnect</span><br><span class="line">- reconnect_error    // the third attempt fails</span><br><span class="line">- reconnect_failed   // the client won't try to reconnect anymore</span><br></pre></td></tr></table></figure>
 
-<p>因为不管中间执行了那些函数，最后都是需要执行 onChange 事件的，因此加了判断，对谷歌浏览器做了特殊处理（其它浏览器暂时没做考虑和处理）。</p>
-<p>完整代码 <a href="https://github.com/liyuan-meng/my-react-app/tree/master/src/inputAndComposition" target="_blank" rel="noopener">https://github.com/liyuan-meng/my-react-app/tree/master/src/inputAndComposition</a></p>
-<h3 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h3><p>到此，正文结束了，我还要说两个需要注意的地方，其实也是踩了的坑：</p>
-<ol>
-<li>如果 Input 组件的实现使用了 React.PureComponent ，在以上需求中会出现的问题：输入特殊字符时，外部通过正则将其 replace 掉了，传入 Input 组件内部的 value 实际上没有任何变化，也不会触发组件 render。这是因为 PureComponent 对 shouldComponentUpdate 函数做了优化，如果发现 props 和 state 上的属性都没有变化，不会重新渲染组件，因此我暂时的处理是：使用 React.Component ，组件实现中对 shouldComponentUpdate 封装。</li>
-<li>在外部使用 mobx 的时候，如果使用 observable 监听 value，会出现和上面蕾丝的情况—输入特殊字符时，通过正则将其 replace 掉了，mobx 也发现 value 没有任何变化，就不会触发 render，我暂时的处理是使用 state，虽然我觉得这不是最好的办法，但我目前还想不到其它的处理方式。</li>
-</ol>
+<h2 id="Disabling-the-default-reconnection-logic（禁用默认的重新连接逻辑）"><a href="#Disabling-the-default-reconnection-logic（禁用默认的重新连接逻辑）" class="headerlink" title="Disabling the default reconnection logic（禁用默认的重新连接逻辑）"></a>Disabling the default reconnection logic（禁用默认的重新连接逻辑）</h2><p>Reconnection can be disabled, in case you want to provide your own reconnection logic:</p>
+<p>如果您想提供自己的重新连接逻辑，则可以禁用重新连接：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> socket = io(&#123;</span><br><span class="line">  reconnection: <span class="literal">false</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">socket.on(<span class="string">'connect_error'</span>, () =&gt; &#123;</span><br><span class="line">  setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    socket.connect();</span><br><span class="line">  &#125;, <span class="number">2000</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">socket.on(<span class="string">'disconnect'</span>, () =&gt; &#123;</span><br><span class="line">  setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    socket.connect();</span><br><span class="line">  &#125;, <span class="number">500</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>Caught a mistake? Edit this page on <a href="https://github.com/socketio/socket.io-website/blob/master/source/docs/client-connection-lifecycle.md" target="_blank" rel="noopener">GitHub</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/06/14/%E8%A7%A3%E5%86%B3-React-%E4%B8%AD%E7%9A%84-input-%E8%BE%93%E5%85%A5%E6%A1%86%E5%9C%A8%E4%B8%AD%E6%96%87%E8%BE%93%E5%85%A5%E6%B3%95%E4%B8%8B%E7%9A%84-bug/" data-id="ckbfcqczl00028xxn3i2n9cr5" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/08/30/Socket.io/client/3.%20Connection%20lifecycle/" data-id="ckejc3t6l0005vcxn6yv9gmdh" class="article-share-link">Share</a>
       
       
     </footer>
@@ -161,10 +202,10 @@
 
 
   
-    <article id="post-GridManager-表格常用配置" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-Socket.io/client/2. Initialization" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2020/05/25/GridManager-%E8%A1%A8%E6%A0%BC%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/" class="article-date">
-  <time datetime="2020-05-25T08:48:24.000Z" itemprop="datePublished">2020-05-25</time>
+    <a href="/2020/08/30/Socket.io/client/2.%20Initialization/" class="article-date">
+  <time datetime="2020-08-30T03:42:35.254Z" itemprop="datePublished">2020-08-30</time>
 </a>
     
   </div>
@@ -175,7 +216,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/05/25/GridManager-%E8%A1%A8%E6%A0%BC%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/">GridManager 表格常用配置</a>
+      <a class="article-title" href="/2020/08/30/Socket.io/client/2.%20Initialization/">Socket.io/client/2. Initialization</a>
     </h1>
   
 
@@ -183,20 +224,53 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>GridManager 库地址：<a href="http://gridmanager.lovejavascript.com/index.html" target="_blank" rel="noopener">http://gridmanager.lovejavascript.com/index.html</a></p>
-<h4 id="1-基础使用—动态数据表格"><a href="#1-基础使用—动态数据表格" class="headerlink" title="1. 基础使用—动态数据表格"></a>1. 基础使用—动态数据表格</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">render() &#123;</span><br><span class="line">  return &lt;Table</span><br><span class="line">      gridManagerName&#x3D;&quot;test&quot;</span><br><span class="line">      disableLine</span><br><span class="line">      supportAjaxPage</span><br><span class="line">      supportAutoOrder&#x3D;&#123;false&#125;</span><br><span class="line">      checkboxConfig&#x3D;&#123;&#123; useRowCheck: true &#125;&#125;</span><br><span class="line">      supportDrag&#x3D;&#123;false&#125;</span><br><span class="line">      supportCheckbox&#x3D;&#123;false&#125;</span><br><span class="line">      currentPageKey&#x3D;&quot;pageNum&quot;</span><br><span class="line">      pageSizeKey&#x3D;&quot;pageSize&quot;</span><br><span class="line">      ajaxData&#x3D;&#123;gridAjaxData&#125;</span><br><span class="line">      columnData&#x3D;&#123;columnData&#125;</span><br><span class="line">	&#x2F;&gt;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        <p>Once you have <a href="https://socket.io/docs/client-installation/" target="_blank" rel="noopener">installed</a> the Socket.IO client library, you can now init the client. The complete list of options can be found <a href="https://socket.io/docs/client-api/#new-Manager-url-options" target="_blank" rel="noopener">here</a>.</p>
+<p>In the examples below, the <code>io</code> object comes either from:</p>
+<p>一旦安装了Socket.IO客户端库，就可以初始化客户端。 选项的完整列表可以在这里找到。</p>
+<p>在以下示例中，io对象来自：</p>
+<ul>
+<li>the <script> import</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"/socket.io/socket.io.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
+<ul>
+<li>NPM</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ES6 import</span></span><br><span class="line"><span class="keyword">import</span> io <span class="keyword">from</span> <span class="string">'socket.io-client'</span>;</span><br><span class="line"><span class="comment">// CommonJS</span></span><br><span class="line"><span class="keyword">const</span> io = <span class="built_in">require</span>(<span class="string">'socket.io-client'</span>);</span><br></pre></td></tr></table></figure>
 
+<h2 id="From-the-same-domain"><a href="#From-the-same-domain" class="headerlink" title="From the same domain"></a>From the same domain</h2><p>If your front is served on the same domain as your server, you can simply use:</p>
+<p>如果您的前台与服务器位于同一域中，则可以简单地使用：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> socket = io();</span><br></pre></td></tr></table></figure>
 
-<h4 id="2-静态数据表格（排序、分页、搜索、下载）"><a href="#2-静态数据表格（排序、分页、搜索、下载）" class="headerlink" title="2. 静态数据表格（排序、分页、搜索、下载）"></a>2. 静态数据表格（排序、分页、搜索、下载）</h4><h4 id="3-多选表格（数据回显、选中状态禁用、设置行选中的唯一key值、最大选中行的限制）"><a href="#3-多选表格（数据回显、选中状态禁用、设置行选中的唯一key值、最大选中行的限制）" class="headerlink" title="3. 多选表格（数据回显、选中状态禁用、设置行选中的唯一key值、最大选中行的限制）"></a>3. 多选表格（数据回显、选中状态禁用、设置行选中的唯一key值、最大选中行的限制）</h4><h4 id="4-树状表格"><a href="#4-树状表格" class="headerlink" title="4. 树状表格"></a>4. 树状表格</h4><h4 id="5-常用的一些使用优化（firstLoading，-isIconFollowText，拖拽、隐藏行）"><a href="#5-常用的一些使用优化（firstLoading，-isIconFollowText，拖拽、隐藏行）" class="headerlink" title="5. 常用的一些使用优化（firstLoading， isIconFollowText，拖拽、隐藏行）"></a>5. 常用的一些使用优化（firstLoading， isIconFollowText，拖拽、隐藏行）</h4>
+<p>The server URL will be deduced from the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/location" target="_blank" rel="noopener">window.location</a> object.</p>
+<p>Additional options can be passed:</p>
+<p>服务器URL将从window.location对象推导出。</p>
+<p>可以传递其他选项：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// default values</span></span><br><span class="line"><span class="keyword">const</span> socket = io(&#123;</span><br><span class="line">  path: <span class="string">'/socket.io'</span>,</span><br><span class="line">  reconnection: <span class="literal">true</span>,</span><br><span class="line">  reconnectionAttempts: <span class="literal">Infinity</span>,</span><br><span class="line">  reconnectionDelay: <span class="number">1000</span>,</span><br><span class="line">  reconnectionDelayMax: <span class="number">5000</span>,</span><br><span class="line">  randomizationFactor: <span class="number">0.5</span>,</span><br><span class="line">  timeout: <span class="number">20000</span>,</span><br><span class="line">  autoConnect: <span class="literal">true</span>,</span><br><span class="line">  query: &#123;&#125;,</span><br><span class="line">  <span class="comment">// options of the Engine.IO client</span></span><br><span class="line">  upgrade: <span class="literal">true</span>,</span><br><span class="line">  forceJSONP: <span class="literal">false</span>,</span><br><span class="line">  jsonp: <span class="literal">true</span>,</span><br><span class="line">  forceBase64: <span class="literal">false</span>,</span><br><span class="line">  enablesXDR: <span class="literal">false</span>,</span><br><span class="line">  timestampRequests: <span class="literal">true</span>,</span><br><span class="line">  timestampParam: <span class="string">'t'</span>,</span><br><span class="line">  policyPort: <span class="number">843</span>,</span><br><span class="line">  transports: [<span class="string">'polling'</span>, <span class="string">'websocket'</span>],</span><br><span class="line">  transportOptions: &#123;&#125;,</span><br><span class="line">  rememberUpgrade: <span class="literal">false</span>,</span><br><span class="line">  onlyBinaryUpgrades: <span class="literal">false</span>,</span><br><span class="line">  requestTimeout: <span class="number">0</span>,</span><br><span class="line">  protocols: [],</span><br><span class="line">  <span class="comment">// options for Node.js</span></span><br><span class="line">  agent: <span class="literal">false</span>,</span><br><span class="line">  pfx: <span class="literal">null</span>,</span><br><span class="line">  key: <span class="literal">null</span>,</span><br><span class="line">  passphrase: <span class="literal">null</span>,</span><br><span class="line">  cert: <span class="literal">null</span>,</span><br><span class="line">  ca: <span class="literal">null</span>,</span><br><span class="line">  ciphers: [],</span><br><span class="line">  rejectUnauthorized: <span class="literal">true</span>,</span><br><span class="line">  perMessageDeflate: <span class="literal">true</span>,</span><br><span class="line">  forceNode: <span class="literal">false</span>,</span><br><span class="line">  localAddress: <span class="literal">null</span>,</span><br><span class="line">  <span class="comment">// options for Node.js / React Native</span></span><br><span class="line">  extraHeaders: &#123;&#125;,</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="From-a-different-domain"><a href="#From-a-different-domain" class="headerlink" title="From a different domain"></a>From a different domain</h2><p>In case your front is not served from the same domain as your server, you have to pass the URL of your server.</p>
+<p>如果您的前台与服务器不在同一个域中，则必须传递服务器的URL。</p>
+<h2 id="Custom-namespace"><a href="#Custom-namespace" class="headerlink" title="Custom namespace"></a>Custom namespace</h2><p>In the examples above, the client will connect to the default namespace. Using only the default namespace should be sufficient for most use cases, but you can specify the namespace with:</p>
+<p>在上面的示例中，客户端将连接到默认名称空间。 在大多数情况下，仅使用默认名称空间就足够了，但是您可以通过以下方式指定名称空间：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// same origin version</span></span><br><span class="line"><span class="keyword">const</span> socket = io(<span class="string">'/admin'</span>);</span><br><span class="line"><span class="comment">// cross origin version</span></span><br><span class="line"><span class="keyword">const</span> socket = io(<span class="string">'https://server-domain.com/admin'</span>);</span><br></pre></td></tr></table></figure>
+
+<p>You can find more details about namespaces <a href="https://socket.io/docs/namespaces/" target="_blank" rel="noopener">here</a>.</p>
+<h2 id="Notable-options"><a href="#Notable-options" class="headerlink" title="Notable options"></a>Notable options</h2><h3 id="transports-option"><a href="#transports-option" class="headerlink" title="transports option"></a><code>transports</code> option</h3><p>By default, the client will try to establish a WebSocket connection, and fall back to XHR/JSONP polling.</p>
+<p>If you are sure the WebSocket connection will succeed, you can disable the polling transport:</p>
+<p>默认情况下，客户端将尝试建立WebSocket连接，并回退到XHR / JSONP轮询。</p>
+<p>如果确定WebSocket连接将成功，则可以禁用轮询传输：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> socket = io(&#123;</span><br><span class="line">  transports: [<span class="string">'websocket'</span>]</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>In that case, due to the nature of the WebSocket connection, you can have several server instances without sticky sessions. More information <a href="https://socket.io/docs/using-multiple-nodes/" target="_blank" rel="noopener">here</a>.</p>
+<p>在这种情况下，由于WebSocket连接的性质，您可以有多个服务器实例而没有粘性会话。 更多信息在这里。</p>
+<p>Caught a mistake? Edit this page on <a href="https://github.com/socketio/socket.io-website/blob/master/source/docs/client-initialization.md" target="_blank" rel="noopener">GitHub</a></p>
+
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/05/25/GridManager-%E8%A1%A8%E6%A0%BC%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/" data-id="ckbfcqczk00018xxn4e7cafac" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/08/30/Socket.io/client/2.%20Initialization/" data-id="ckejc3t6l0004vcxngbkp7f2i" class="article-share-link">Share</a>
       
       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/GridManager/" rel="tag">GridManager</a></li></ul>
-
     </footer>
   </div>
   
@@ -204,10 +278,10 @@
 
 
   
-    <article id="post-安装-Linux-版本为知笔记" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-Socket.io/client/1. Installation" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2020/05/25/%E5%AE%89%E8%A3%85-Linux-%E7%89%88%E6%9C%AC%E4%B8%BA%E7%9F%A5%E7%AC%94%E8%AE%B0/" class="article-date">
-  <time datetime="2020-05-25T07:46:37.000Z" itemprop="datePublished">2020-05-25</time>
+    <a href="/2020/08/30/Socket.io/client/1.%20Installation/" class="article-date">
+  <time datetime="2020-08-30T03:36:58.770Z" itemprop="datePublished">2020-08-30</time>
 </a>
     
   </div>
@@ -218,7 +292,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/05/25/%E5%AE%89%E8%A3%85-Linux-%E7%89%88%E6%9C%AC%E4%B8%BA%E7%9F%A5%E7%AC%94%E8%AE%B0/">安装 Linux 版本为知笔记</a>
+      <a class="article-title" href="/2020/08/30/Socket.io/client/1.%20Installation/">Socket.io/client/1. Installation</a>
     </h1>
   
 
@@ -226,24 +300,72 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="官网安装方式"><a href="#官网安装方式" class="headerlink" title="官网安装方式"></a>官网安装方式</h3><ul>
-<li>下载 <a href="http://www.wiz.cn/wiznote-linux.html" target="_blank" rel="noopener">http://www.wiz.cn/wiznote-linux.html</a></li>
-<li>Ubuntu 18.04 下运行前，请先执行 sudo apt install openssl1.0 libssl1.0-dev ，再双击运行绿色版</li>
-<li>推荐使用 ibus 输入法</li>
-</ul>
-<h3 id="下载-deb-文件进行安装"><a href="#下载-deb-文件进行安装" class="headerlink" title="下载 .deb 文件进行安装"></a>下载 .deb 文件进行安装</h3><ul>
-<li>安装包下载 <a href="https://launchpad.net/~wiznote-team/+archive/ubuntu/ppa/+packages" target="_blank" rel="noopener">https://launchpad.net/~wiznote-team/+archive/ubuntu/ppa/+packages</a></li>
-<li>双击下载的 .deb 文件进行安装</li>
-</ul>
+        <h2 id="Compatibility（兼容性）"><a href="#Compatibility（兼容性）" class="headerlink" title="Compatibility（兼容性）"></a>Compatibility（兼容性）</h2><p>Socket.IO does support IE9 and above. IE 6/7/8 are not supported anymore.</p>
+<p>Browser compatibility is tested thanks to the awesome Sauce Labs platform:</p>
+<p>Socket.IO确实支持IE9及更高版本。 不再支持IE 6/7/8。</p>
+<p>出色的Sauce Labs平台对浏览器的兼容性进行了测试：</p>
+<p><img src="https://socket.io/images/saucelabs.svg" alt="Browser support"></p>
+<h2 id="Release-notes"><a href="#Release-notes" class="headerlink" title="Release notes"></a>Release notes</h2><p>The release notes of each version can be found in <a href="https://github.com/socketio/socket.io-client/releases" target="_blank" rel="noopener">GitHub</a>.</p>
+<h2 id="Installation"><a href="#Installation" class="headerlink" title="Installation"></a>Installation</h2><h3 id="Standalone-build（独立构建）"><a href="#Standalone-build（独立构建）" class="headerlink" title="Standalone build（独立构建）"></a>Standalone build（独立构建）</h3><p>By default, the Socket.IO server exposes a client bundle at <code>/socket.io/socket.io.js</code>.</p>
+<p><code>io</code> will be registered as a global variable:</p>
+<p>默认情况下，Socket.IO服务器在/socket.io/socket.io.js公开客户端捆绑包。</p>
+<p>io将被注册为全局变量：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"/socket.io/socket.io.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="actionscript">  <span class="keyword">const</span> socket = io();</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>If you don’t need this (see other options below), you can disable the functionality on the server side:</p>
+<p>如果不需要此功能（请参见下面的其他选项），则可以在服务器端禁用此功能：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> io = <span class="built_in">require</span>(<span class="string">'socket.io'</span>)(&#123;</span><br><span class="line">  serveClient: <span class="literal">false</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="From-a-CDN"><a href="#From-a-CDN" class="headerlink" title="From a CDN"></a>From a CDN</h3><p>You can also include the client bundle from a CDN:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>Socket.IO is also available from other CDN like <a href="https://cdn.jsdelivr.net/npm/socket.io-client@2.3.0/dist/socket.io.js" target="_blank" rel="noopener">jsDelivr</a> and <a href="https://unpkg.com/socket.io-client@2.3.0/dist/socket.io.js" target="_blank" rel="noopener">unpkg</a>.</p>
+<p>There are several bundles available:</p>
+<p>也可以从其他CDN（如jsDelivr和unpkg）获得Socket.IO。</p>
+<p>有几种可用的捆绑包：</p>
+<table>
+<thead>
+<tr>
+<th align="left">Name</th>
+<th align="left">Size</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">socket.io.js</td>
+<td align="left">19.8 kB min+gzip</td>
+<td align="left">Production version, with <a href="https://www.npmjs.com/package/debug" target="_blank" rel="noopener">debug</a></td>
+</tr>
+<tr>
+<td align="left">socket.io.slim.js</td>
+<td align="left">15.6 kB min+gzip</td>
+<td align="left">Production version, without <a href="https://www.npmjs.com/package/debug" target="_blank" rel="noopener">debug</a></td>
+</tr>
+<tr>
+<td align="left">socket.io.dev.js</td>
+<td align="left">38.5 kB gzip</td>
+<td align="left">Unminified version, with <a href="https://www.npmjs.com/package/debug" target="_blank" rel="noopener">debug</a></td>
+</tr>
+</tbody></table>
+<p>The <a href="https://www.npmjs.com/package/debug" target="_blank" rel="noopener">debug</a> package allows to print debug information to the console. You can find more information <a href="https://socket.io/docs/logging-and-debugging/" target="_blank" rel="noopener">here</a>.</p>
+<p>During development, we recommend to use the <code>socket.io.dev.js</code> bundle. By setting <code>localStorage.debug = &#39;socket.io-client:socket&#39;</code>, any event received by the client will be printed to the console.</p>
+<p>For production, please use the <code>socket.io.slim.js</code> bundle, which is an optimized build excluding the debug package.</p>
+<p>[debug]（<a href="https://www.npmjs.com/package/debug）软件包可将调试信息打印到控制台。" target="_blank" rel="noopener">https://www.npmjs.com/package/debug）软件包可将调试信息打印到控制台。</a> 您可以在[此处]（<a href="https://socket.io/docs/logging-and-debugging/）中找到更多信息。" target="_blank" rel="noopener">https://socket.io/docs/logging-and-debugging/）中找到更多信息。</a></p>
+<p>在开发期间，我们建议使用<code>socket.io.dev.js</code>捆绑包。 通过设置<code>localStorage.debug =&#39;socket.io-client：socket&#39;</code>，客户端收到的任何事件都将被打印到控制台。</p>
+<p>对于生产，请使用<code>socket.io.slim.js</code>捆绑包，该捆绑包是经过优化的构建，不包括调试包。</p>
+<h3 id="From-NPM"><a href="#From-NPM" class="headerlink" title="From NPM"></a>From NPM</h3><p>The Socket.IO client is compatible with bundler like <a href="https://webpack.js.org/" target="_blank" rel="noopener">webpack</a> or <a href="http://browserify.org/" target="_blank" rel="noopener">browserify</a>.</p>
+<p>Socket.IO客户端与webpack或browserify等捆绑程序兼容。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install socket.io-client</span><br></pre></td></tr></table></figure>
+
+<p>The client can also be run from Node.js.</p>
+<p>Caught a mistake? Edit this page on <a href="https://github.com/socketio/socket.io-website/blob/master/source/docs/client-installation.md" target="_blank" rel="noopener">GitHub</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/05/25/%E5%AE%89%E8%A3%85-Linux-%E7%89%88%E6%9C%AC%E4%B8%BA%E7%9F%A5%E7%AC%94%E8%AE%B0/" data-id="ckam6t4900005v8xn8nih9j4g" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/08/30/Socket.io/client/1.%20Installation/" data-id="ckejc3t6k0003vcxn0u201bht" class="article-share-link">Share</a>
       
       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux-%E4%B8%BA%E7%9F%A5%E7%AC%94%E8%AE%B0/" rel="tag">Linux 为知笔记</a></li></ul>
-
     </footer>
   </div>
   
@@ -251,10 +373,10 @@
 
 
   
-    <article id="post-使用Hexo-Github搭建博客" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-Socket.io/server/5. Using multiple nodes" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2020/05/25/%E4%BD%BF%E7%94%A8Hexo-Github%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/" class="article-date">
-  <time datetime="2020-05-25T07:29:59.000Z" itemprop="datePublished">2020-05-25</time>
+    <a href="/2020/08/30/Socket.io/server/5.%20Using%20multiple%20nodes/" class="article-date">
+  <time datetime="2020-08-30T03:27:06.979Z" itemprop="datePublished">2020-08-30</time>
 </a>
     
   </div>
@@ -265,7 +387,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/05/25/%E4%BD%BF%E7%94%A8Hexo-Github%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/">使用Hexo + Github搭建博客</a>
+      <a class="article-title" href="/2020/08/30/Socket.io/server/5.%20Using%20multiple%20nodes/">Socket.io/server/5. Using multiple nodes</a>
     </h1>
   
 
@@ -273,75 +395,567 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="1-在-github-上创建项目"><a href="#1-在-github-上创建项目" class="headerlink" title="1. 在 github 上创建项目"></a>1. 在 github 上创建项目</h3><ul>
-<li>在 github 上创建一个仓库 liyuan-meng.github.io(用户名.github.io)</li>
-<li>在搭建好的项目页点击 settings-GitHub Pages，你会发现项目已经部署到网络上： Your site is published at <a href="https://liyuan-meng.github.io/" target="_blank" rel="noopener">https://liyuan-meng.github.io/</a></li>
-</ul>
-<h3 id="2-本地安装-Hexo-并更新配置"><a href="#2-本地安装-Hexo-并更新配置" class="headerlink" title="2. 本地安装 Hexo 并更新配置"></a>2. 本地安装 Hexo 并更新配置</h3><ul>
-<li><p>安装 Hexo</p>
-<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo -g</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>检查 Hexo 是否安装成功</p>
-<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo -v</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>创建一个文件夹用来写博客</p>
-<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir blog</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>进入到 blog 目录下，初始化该文件夹，看到后面的“Start blogging with Hexo！”表示初始化成功！</p>
-<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo init</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>安装依赖</p>
-<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>启动 hexo 服务并访问 localhost:4000</p>
-<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo s</span><br></pre></td></tr></table></figure>
+        <h2 id="Sticky-load-balancing（粘性负载平衡）"><a href="#Sticky-load-balancing（粘性负载平衡）" class="headerlink" title="Sticky load balancing（粘性负载平衡）"></a>Sticky load balancing（粘性负载平衡）</h2><p>If you plan to distribute the load of connections among different processes or machines, you have to make sure that requests associated with a particular session id connect to the process that originated them.</p>
+<p>This is due to certain transports like XHR Polling or JSONP Polling relying on firing several requests during the lifetime of the “socket”. Failing to enable sticky balancing will result in the dreaded:</p>
+<p>如果计划在不同的进程或机器之间分配连接负载，则必须确保与特定会话ID关联的请求连接到发起它们的进程。</p>
+<p>这是由于某些传输（例如XHR轮询或JSONP轮询）在“套接字”的生存期内依赖于触发多个请求而导致的。 无法启用粘性平衡将导致可怕的后果：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Error during WebSocket handshake: Unexpected response code: 400</span><br></pre></td></tr></table></figure>
 
-</li>
-</ul>
-<h3 id="3-关联-Github-和-Hexo"><a href="#3-关联-Github-和-Hexo" class="headerlink" title="3. 关联 Github 和 Hexo"></a>3. 关联 Github 和 Hexo</h3><ul>
-<li><p>设置 github 的 username 和 email(如果之前设置过则跳过此步骤)</p>
-<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git config --global user.name "liyuan-meng"</span><br><span class="line"></span><br><span class="line">git config --global user.email "****@163.com"</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>进入到 .ssh 目录下</p>
-<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd ~/.ssh</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>生成秘钥和公钥（一路回车即可），得到两个文件: id_rsa、id_rsa.pub</p>
-<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -C "****@163.com"</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>将秘钥添加到 ssh-agent</p>
-<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-add ~/.ssh/id_rsa</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>登录 github，点击头像下的 settings，选择 SSH and GPG keys，添加一个 ssh key，然后将公钥 id_rsa.pub 文件中的内容复制进去</p>
-</li>
-<li><p>测试 ssh key 是否添加成功</p>
-<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -T git@github.com</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>配置 deploy，打开 blog/_config.yml 文件，修改 deploy</p>
-<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repository: git@github.com:liyuan-meng/liyuan-meng.github.io.git</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
+<p>Which means that the upgrade request was sent to a node which did not know the given socket id, hence the HTTP 400 response.</p>
+<p>To illustrate why this is needed, consider the example of emitting an event to all connected clients:</p>
+<p>这意味着升级请求已发送到不知道给定套接字ID的节点，因此不知道HTTP 400响应。</p>
+<p>为了说明为什么需要这样做，请考虑向所有连接的客户端发出事件的示例：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">io.emit('hi', 'all sockets');</span><br></pre></td></tr></table></figure>
 
+<p>Chances are that some of those clients might have an active bi-directional communication channel like <code>WebSocket</code> that we can write to immediately, but some of them might be using long-polling.</p>
+<p>If they’re using long polling, they might or might not have sent a request that we can write to. They could be “in between” those requests. In those situations, it means we have to buffer messages in the process. In order for the client to successfully claim those messages when he sends his request, the easiest way is for him to connect to be routed to that same process.</p>
+<p>As noted above, <code>WebSocket</code> transport do not have this limitation, since the underlying TCP connection is kept open between the client and the given server. That’s why you might find some suggestions to only use the <code>WebSocket</code> transport:</p>
+<p>可能其中一些客户端可能具有活动的双向通信通道，例如WebSocket，我们可以立即写入该通道，但是其中一些客户端可能正在使用长轮询。</p>
+<p>如果他们使用长时间轮询，那么他们可能已经发送或未发送我们可以写入的请求。 它们可能在这些请求之间。 在这种情况下，这意味着我们必须在流程中缓冲消息。 为了使客户端在发送请求时成功声明这些消息，最简单的方法是将其连接到同一进程。</p>
+<p>如上所述，WebSocket传输没有此限制，因为底层TCP连接在客户端和给定服务器之间保持打开状态。 因此，您可能会发现一些建议仅使用WebSocket传输：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> client = io(<span class="string">'https://io.yourhost.com'</span>, &#123;</span><br><span class="line">  <span class="comment">// WARNING: in that case, there is no fallback to long-polling</span></span><br><span class="line">  transports: [ <span class="string">'websocket'</span> ] <span class="comment">// or [ 'websocket', 'polling' ], which is the same thing</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>Both means that there is <strong>NO FALLBACK</strong> to long-polling when the websocket connection cannot be established, which is in fact one of the key feature of Socket.IO. In that case, you should maybe consider using raw <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebSocket" target="_blank" rel="noopener">WebSocket</a>, or a thin wrapper like <a href="https://github.com/appuri/robust-websocket" target="_blank" rel="noopener">robust-websocket</a>.</p>
+<p>To achieve sticky-session, there are two main solutions:</p>
+<ul>
+<li>routing clients based on their originating address</li>
+<li>routing clients based on a cookie</li>
+</ul>
+<p>两者都意味着当无法建立Websocket连接时，不会回退到长轮询，这实际上是Socket.IO的关键功能之一。 在这种情况下，您可能应该考虑使用原始WebSocket或像robust-websocket这样的薄包装器。</p>
+<p>为了实现粘性会话，有两种主要解决方案：</p>
+<ul>
+<li><p>根据客户端的原始地址路由</p>
+</li>
+<li><p>根据Cookie路由客户端</p>
 </li>
 </ul>
-<h3 id="4-创建博客并提交"><a href="#4-创建博客并提交" class="headerlink" title="4. 创建博客并提交"></a>4. 创建博客并提交</h3><ul>
-<li><p>安装扩展</p>
-<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>在 _posts 目录下创建一个 markdown 文件</p>
-<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo new 'hello,hexo'</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>生成以及部署</p>
-<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo d -g</span><br></pre></td></tr></table></figure>
+<h2 id="NginX-configuration"><a href="#NginX-configuration" class="headerlink" title="NginX configuration"></a>NginX configuration</h2><p>Within the <code>http { }</code> section of your <code>nginx.conf</code> file, you can declare a <code>upstream</code> section with a list of Socket.IO process you want to balance load between:</p>
+<p>在nginx.conf文件的http {}部分中，可以声明一个上游部分，其中包含要平衡负载的Socket.IO进程列表：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">  server &#123;</span><br><span class="line">    listen 3000;</span><br><span class="line">    server_name io.yourhost.com;</span><br><span class="line"></span><br><span class="line">    location / &#123;</span><br><span class="line">      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">      proxy_set_header Host $host;</span><br><span class="line"></span><br><span class="line">      proxy_pass http://nodes;</span><br><span class="line"></span><br><span class="line">      # enable WebSockets</span><br><span class="line">      proxy_http_version 1.1;</span><br><span class="line">      proxy_set_header Upgrade $http_upgrade;</span><br><span class="line">      proxy_set_header Connection "upgrade";</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  upstream nodes &#123;</span><br><span class="line">    # enable sticky session based on IP</span><br><span class="line">    ip_hash;</span><br><span class="line"></span><br><span class="line">    server app01:3000;</span><br><span class="line">    server app02:3000;</span><br><span class="line">    server app03:3000;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-</li>
-</ul>
-<p>另一种写法</p>
-<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo generate</span><br><span class="line">hexo deploy</span><br></pre></td></tr></table></figure>
+<p>Notice the <code>ip_hash</code> instruction that indicates the connections will be sticky.</p>
+<p>Make sure you also configure <code>worker_processes</code> in the topmost level to indicate how many workers NginX should use. You might also want to look into tweaking the <code>worker_connections</code> setting within the <code>events { }</code> block.</p>
+<p><a href="https://github.com/socketio/socket.io/tree/master/examples/cluster-nginx" target="_blank" rel="noopener">Example</a></p>
+<p>请注意ip_hash指令，该指令指示连接将处于粘性状态。</p>
+<p>确保您还在最顶层配置了worker_processes，以指示NginX应该使用多少个worker。 您可能还想研究一下在事件{}块中对worker_connections设置的调整。</p>
+<h2 id="Apache-HTTPD-configuration"><a href="#Apache-HTTPD-configuration" class="headerlink" title="Apache HTTPD configuration"></a>Apache HTTPD configuration</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">Header add Set-Cookie "SERVERID=sticky.%&#123;BALANCER_WORKER_ROUTE&#125;e; path=/" env=BALANCER_ROUTE_CHANGED</span><br><span class="line"></span><br><span class="line">&lt;Proxy "balancer://nodes_polling"&gt;</span><br><span class="line">    BalancerMember "http://app01:3000" route=app01</span><br><span class="line">    BalancerMember "http://app02:3000" route=app02</span><br><span class="line">    BalancerMember "http://app03:3000" route=app03</span><br><span class="line">    ProxySet stickysession=SERVERID</span><br><span class="line">&lt;/Proxy&gt;</span><br><span class="line"></span><br><span class="line">&lt;Proxy "balancer://nodes_ws"&gt;</span><br><span class="line">    BalancerMember "ws://app01:3000" route=app01</span><br><span class="line">    BalancerMember "ws://app02:3000" route=app02</span><br><span class="line">    BalancerMember "ws://app03:3000" route=app03</span><br><span class="line">    ProxySet stickysession=SERVERID</span><br><span class="line">&lt;/Proxy&gt;</span><br><span class="line"></span><br><span class="line">RewriteEngine On</span><br><span class="line">RewriteCond %&#123;HTTP:Upgrade&#125; =websocket [NC]</span><br><span class="line">RewriteRule /(.*) balancer://nodes_ws/$1 [P,L]</span><br><span class="line">RewriteCond %&#123;HTTP:Upgrade&#125; !=websocket [NC]</span><br><span class="line">RewriteRule /(.*) balancer://nodes_polling/$1 [P,L]</span><br><span class="line"></span><br><span class="line">ProxyTimeout 3</span><br></pre></td></tr></table></figure>
 
-<p>访问 <a href="http://liyuan-meng.github.io" target="_blank" rel="noopener">http://liyuan-meng.github.io</a></p>
+<p><a href="https://github.com/socketio/socket.io/tree/master/examples/cluster-httpd" target="_blank" rel="noopener">Example</a></p>
+<h2 id="HAProxy-configuration"><a href="#HAProxy-configuration" class="headerlink" title="HAProxy configuration"></a>HAProxy configuration</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> Reference: http://blog.haproxy.com/2012/11/07/websockets-load-balancing-with-haproxy/</span></span><br><span class="line"></span><br><span class="line">listen chat</span><br><span class="line">  bind *:80</span><br><span class="line">  default_backend nodes</span><br><span class="line"></span><br><span class="line">backend nodes</span><br><span class="line">  option httpchk HEAD /health</span><br><span class="line">  http-check expect status 200</span><br><span class="line">  cookie io prefix indirect nocache # using the `io` cookie set upon handshake</span><br><span class="line">  server app01 app01:3000 check cookie app01</span><br><span class="line">  server app02 app02:3000 check cookie app02</span><br><span class="line">  server app03 app03:3000 check cookie app03</span><br></pre></td></tr></table></figure>
+
+<h2 id="Using-Node-JS-Cluster（使用Node-JS集群）"><a href="#Using-Node-JS-Cluster（使用Node-JS集群）" class="headerlink" title="Using Node.JS Cluster（使用Node.JS集群）"></a>Using Node.JS Cluster（使用Node.JS集群）</h2><p>Just like NginX, Node.JS comes with built-in clustering support through the <code>cluster</code> module.</p>
+<p>Fedor Indutny has created a module called <a href="https://github.com/indutny/sticky-session" target="_blank" rel="noopener">sticky session</a> that ensures file descriptors (ie: connections) are routed based on the originating <code>remoteAddress</code> (ie: IP). Please note that this might lead to unbalanced routing, depending on the hashing method.</p>
+<p>You could also assign a different port to each worker of the cluster, based on the cluster worker ID, and balance the load with the configuration that you can find above.</p>
+<p>就像NginX一样，Node.JS通过集群模块提供了内置的集群支持。</p>
+<p>Fedor Indutny创建了一个名为“粘性会话”的模块，该模块可确保文件描述符（即：连接）基于始发的remoteAddress（即：IP）进行路由。 请注意，这可能会导致路由不平衡，具体取决于哈希方法。</p>
+<p>您还可以根据集群工作程序ID为集群的每个工作程序分配不同的端口，并通过上面的配置平衡负载。</p>
+<h2 id="Passing-events-between-nodes（在节点之间传递事件）"><a href="#Passing-events-between-nodes（在节点之间传递事件）" class="headerlink" title="Passing events between nodes（在节点之间传递事件）"></a>Passing events between nodes（在节点之间传递事件）</h2><p>Now that you have multiple Socket.IO nodes accepting connections, if you want to broadcast events to everyone (or even everyone in a certain <a href="https://socket.io/docs/rooms-and-namespaces/#Rooms" target="_blank" rel="noopener">room</a>) you’ll need some way of passing messages between processes or computers.</p>
+<p>The interface in charge of routing messages is what we call the <code>Adapter</code>. You can implement your own on top of the <a href="https://github.com/socketio/socket.io-adapter" target="_blank" rel="noopener">socket.io-adapter</a> (by inheriting from it) or you can use the one we provide on top of <a href="https://redis.io/" target="_blank" rel="noopener">Redis</a>: <a href="https://github.com/socketio/socket.io-redis" target="_blank" rel="noopener">socket.io-redis</a>:</p>
+<p>现在，您已经拥有多个接受连接的Socket.IO节点，如果您想向所有人（甚至是某个房间中的所有人）广播事件，您将需要某种方式在进程或计算机之间传递消息。</p>
+<p>负责路由消息的接口就是我们所说的适配器。 您可以在socket.io-adapter上实现自己的继承（通过继承），也可以使用我们在Redis之上提供的实现：socket.io-redis：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> io = <span class="built_in">require</span>(<span class="string">'socket.io'</span>)(<span class="number">3000</span>);</span><br><span class="line"><span class="keyword">const</span> redis = <span class="built_in">require</span>(<span class="string">'socket.io-redis'</span>);</span><br><span class="line">io.adapter(redis(&#123; <span class="attr">host</span>: <span class="string">'localhost'</span>, <span class="attr">port</span>: <span class="number">6379</span> &#125;));</span><br></pre></td></tr></table></figure>
+
+<p>Then the following call:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">io.emit(<span class="string">'hi'</span>, <span class="string">'all sockets'</span>);</span><br></pre></td></tr></table></figure>
+
+<p>will be broadcast to every node through the <a href="https://redis.io/topics/pubsub" target="_blank" rel="noopener">Pub/Sub mechanism</a> of Redis.</p>
+<p><strong>Note:</strong> sticky-session is still needed when using the Redis adapter.</p>
+<p>If you want to pass messages to it from non-socket.io processes, you should look into <a href="https://socket.io/docs/rooms-and-namespaces/#Sending-messages-from-the-outside-world" target="_blank" rel="noopener">“Sending messages from the outside-world”</a>.</p>
+<p>将通过Redis的发布/订阅机制广播到每个节点。</p>
+<p>注意：使用Redis适配器时仍然需要粘性会话。</p>
+<p>如果要从non-socket.io进程向其传递消息，则应查看“从外界发送消息”。</p>
+<p>Caught a mistake? Edit this page on <a href="https://github.com/socketio/socket.io-website/blob/master/source/docs/using-multiple-nodes.md" target="_blank" rel="noopener">GitHub</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/05/25/%E4%BD%BF%E7%94%A8Hexo-Github%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/" data-id="ckam67qn10004v8xnfayd5zpn" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/08/30/Socket.io/server/5.%20Using%20multiple%20nodes/" data-id="ckejc3t6t000bvcxn8pipeqfy" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Socket.io/server/4. Rooms" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/08/30/Socket.io/server/4.%20Rooms/" class="article-date">
+  <time datetime="2020-08-30T03:14:11.845Z" itemprop="datePublished">2020-08-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/08/30/Socket.io/server/4.%20Rooms/">Socket.io/server/4. Rooms</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Within each <a href="https://socket.io/docs/namespaces/" target="_blank" rel="noopener">Namespace</a>, you can define arbitrary channels called “Rooms” that sockets can <code>join</code> and <code>leave</code>.</p>
+<p>This is useful to broadcast data to a subset of sockets:</p>
+<p>在每个[名称空间]（<a href="https://socket.io/docs/namespaces/）中，您可以定义称为“房间”的任意通道，套接字可以“加入”和“离开”。" target="_blank" rel="noopener">https://socket.io/docs/namespaces/）中，您可以定义称为“房间”的任意通道，套接字可以“加入”和“离开”。</a></p>
+<p>这对于将数据广播到套接字的子集很有用：</p>
+<p><img src="https://socket.io/images/rooms.png" alt="Room diagram"></p>
+<h2 id="Joining-and-leaving"><a href="#Joining-and-leaving" class="headerlink" title="Joining and leaving"></a>Joining and leaving</h2><p>You can call <code>join</code> to subscribe the socket to a given channel:</p>
+<p>您可以调用<code>join</code>来将套接字订阅到给定的频道：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">io.on(<span class="string">'connection'</span>, socket =&gt; &#123;</span><br><span class="line">  socket.join(<span class="string">'some room'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>And then simply use <code>to</code> or <code>in</code> (they are the same) when broadcasting or emitting:</p>
+<p>然后在广播或发射时简单地使用to或in（它们相同）：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">io.to(<span class="string">'some room'</span>).emit(<span class="string">'some event'</span>);</span><br></pre></td></tr></table></figure>
+
+<p>You can emit to several rooms at the same time:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">io.to(<span class="string">'room1'</span>).to(<span class="string">'room2'</span>).to(<span class="string">'room3'</span>).emit(<span class="string">'some event'</span>);</span><br></pre></td></tr></table></figure>
+
+<p>In that case, an <a href="https://en.wikipedia.org/wiki/Union_(set_theory)" target="_blank" rel="noopener">union</a> is performed: every socket that is at least in one of the rooms will get the event <strong>once</strong> (even if the socket is in two or more rooms).</p>
+<p>You can also broadcast to a room from a given socket:</p>
+<p>在这种情况下，将执行并集：至少在一个房间中的每个套接字都将获得一次事件（即使该套接字在两个或多个房间中）。</p>
+<p>You can also broadcast to a room from a given socket:</p>
+<p>您还可以从给定的套接字向房间广播：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">io.on(<span class="string">'connection'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">socket</span>)</span>&#123;</span><br><span class="line">  socket.to(<span class="string">'some room'</span>).emit(<span class="string">'some event'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>In that case, every sockets in the room <strong>excluding</strong> the sender will get the event.</p>
+<p>To leave a channel you call <code>leave</code> in the same fashion as <code>join</code>. Both methods are asynchronous and accept a <code>callback</code> argument.</p>
+<p>在这种情况下，会议室中除发送方之外的所有套接字都将获得事件。</p>
+<p>要离开频道，您呼叫离开的方式与加入相同。 这两种方法都是异步的，并且接受回调参数。</p>
+<h2 id="Default-room"><a href="#Default-room" class="headerlink" title="Default room"></a>Default room</h2><p>Each <code>Socket</code> in Socket.IO is identified by a random, unguessable, unique identifier <code>Socket#id</code>. For your convenience, each socket automatically joins a room identified by its own id.</p>
+<p>This makes it easy to broadcast messages to other sockets:</p>
+<p>Socket.IO中的每个Socket都由一个随机的，不可猜测的唯一标识符Socket＃id标识。 为了您的方便，每个插座会自动加入以其自己的ID标识的房间。</p>
+<p>这使得将消息广播到其他套接字变得容易：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">io.on(<span class="string">'connection'</span>, socket =&gt; &#123;</span><br><span class="line">  socket.on(<span class="string">'say to someone'</span>, (id, msg) =&gt; &#123;</span><br><span class="line">    socket.to(id).emit(<span class="string">'my message'</span>, msg);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Sample-use-cases"><a href="#Sample-use-cases" class="headerlink" title="Sample use cases"></a>Sample use cases</h2><ul>
+<li>broadcast data to each device / tab of a given user</li>
+<li>将数据广播到给定用户的每个设备/选项卡</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">io.on(<span class="string">'connection'</span>, <span class="keyword">async</span> (socket) =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> userId = <span class="keyword">await</span> fetchUserId(socket);</span><br><span class="line"></span><br><span class="line">  socket.join(userId);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// and then later</span></span><br><span class="line">  io.to(userId).emit(<span class="string">'hi'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>send notifications about a given entity</li>
+<li>发送有关给定实体的通知</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">io.on(<span class="string">'connection'</span>, <span class="keyword">async</span> (socket) =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> projects = <span class="keyword">await</span> fetchProjects(socket);</span><br><span class="line"></span><br><span class="line">  projects.forEach(<span class="function"><span class="params">project</span> =&gt;</span> socket.join(<span class="string">'project:'</span> + project.id));</span><br><span class="line"></span><br><span class="line">  socket.on(<span class="string">'update project'</span>, <span class="keyword">async</span> (payload) =&gt; &#123;</span><br><span class="line">    <span class="keyword">const</span> project = <span class="keyword">await</span> updateProject(payload);</span><br><span class="line">    io.to(<span class="string">'project:'</span> + project.id).emit(<span class="string">'project updated'</span>, project);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Disconnection"><a href="#Disconnection" class="headerlink" title="Disconnection"></a>Disconnection</h2><p>Upon disconnection, sockets <code>leave</code> all the channels they were part of automatically, and no special teardown is needed on your part.</p>
+<p>You can fetch the rooms the Socket was in by listening to the <code>disconnecting</code> event:</p>
+<p>断开连接后，套接字会自动离开它们所属的所有通道，您无需进行任何特殊拆卸。</p>
+<p>您可以通过侦听断开连接事件来获取套接字所在的房间：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">io.on(<span class="string">'connection'</span>, socket =&gt; &#123;</span><br><span class="line">  socket.on(<span class="string">'disconnecting'</span>, () =&gt; &#123;</span><br><span class="line">    <span class="keyword">const</span> rooms = <span class="built_in">Object</span>.keys(socket.rooms);</span><br><span class="line">    <span class="comment">// the rooms array contains at least the socket ID</span></span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  socket.on(<span class="string">'disconnect'</span>, () =&gt; &#123;</span><br><span class="line">    <span class="comment">// socket.rooms === &#123;&#125;</span></span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Sending-messages-from-the-outside-world"><a href="#Sending-messages-from-the-outside-world" class="headerlink" title="Sending messages from the outside-world"></a>Sending messages from the outside-world</h2><p>In some cases, you might want to emit events to sockets in Socket.IO namespaces / rooms from outside the context of your Socket.IO processes.</p>
+<p>There are several ways to tackle this problem, like implementing your own channel to send messages into the process.</p>
+<p>To facilitate this use case, we created two modules:</p>
+<ul>
+<li><a href="https://github.com/socketio/socket.io-redis" target="_blank" rel="noopener">socket.io-redis</a></li>
+<li><a href="https://github.com/socketio/socket.io-emitter" target="_blank" rel="noopener">socket.io-emitter</a></li>
+</ul>
+<p>By implementing the Redis <code>Adapter</code>:</p>
+<p>在某些情况下，您可能想从Socket.IO进程的上下文外部向Socket.IO命名空间/房间中的套接字发出事件。</p>
+<p>有多种方法可以解决此问题，例如实现自己的渠道以将消息发送到流程中。</p>
+<p>为了简化此用例，我们创建了两个模块：</p>
+<ul>
+<li><p>套接字</p>
+</li>
+<li><p>套接字发射器</p>
+</li>
+</ul>
+<p>通过实现Redis适配器：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> io = <span class="built_in">require</span>(<span class="string">'socket.io'</span>)(<span class="number">3000</span>);</span><br><span class="line"><span class="keyword">const</span> redis = <span class="built_in">require</span>(<span class="string">'socket.io-redis'</span>);</span><br><span class="line">io.adapter(redis(&#123; <span class="attr">host</span>: <span class="string">'localhost'</span>, <span class="attr">port</span>: <span class="number">6379</span> &#125;));</span><br></pre></td></tr></table></figure>
+
+<p>you can then <code>emit</code> messages from any other process to any channel</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> io = <span class="built_in">require</span>(<span class="string">'socket.io-emitter'</span>)(&#123; <span class="attr">host</span>: <span class="string">'127.0.0.1'</span>, <span class="attr">port</span>: <span class="number">6379</span> &#125;);</span><br><span class="line">setInterval(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">  io.emit(<span class="string">'time'</span>, <span class="keyword">new</span> <span class="built_in">Date</span>);</span><br><span class="line">&#125;, <span class="number">5000</span>);</span><br></pre></td></tr></table></figure>
+
+<p>Caught a mistake? Edit this page on <a href="https://github.com/socketio/socket.io-website/blob/master/source/docs/rooms.md" target="_blank" rel="noopener">GitHub</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/08/30/Socket.io/server/4.%20Rooms/" data-id="ckejc3t6m0007vcxnabo68g84" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Socket.io/server/3. Namespaces" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/08/30/Socket.io/server/3.%20Namespaces/" class="article-date">
+  <time datetime="2020-08-30T02:57:39.095Z" itemprop="datePublished">2020-08-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/08/30/Socket.io/server/3.%20Namespaces/">Socket.io/server/3. Namespaces</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>A Namespace is a communication channel that allows you to split the logic of your application over a single shared connection.</p>
+<p>命名空间是一个通信通道，它使您可以在单个共享连接上拆分应用程序的逻辑。</p>
+<p><img src="https://socket.io/images/namespaces.png" alt="Namespace diagram"></p>
+<p>Possible use cases:</p>
+<ul>
+<li>you want to create an admin namespace that only authorized users have access to, so the logic related to those users is separated from the rest of the application</li>
+</ul>
+<p>可能的用例：</p>
+<ul>
+<li>您想要创建仅授权用户有权访问的管理名称空间，因此与这些用户相关的逻辑与应用程序的其余部分分开</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> adminNamespace = io.of(<span class="string">'/admin'</span>);</span><br><span class="line"></span><br><span class="line">adminNamespace.use(<span class="function">(<span class="params">socket, next</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="comment">// ensure the user has sufficient rights</span></span><br><span class="line">  next();</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">adminNamespace.on(<span class="string">'connection'</span>, socket =&gt; &#123;</span><br><span class="line">  socket.on(<span class="string">'delete user'</span>, () =&gt; &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>your application has multiple tenants so you want to dynamically create one namespace per tenant</li>
+<li>您的应用程序有多个租户，因此您想为每个租户动态创建一个命名空间</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> workspaces = io.of(<span class="regexp">/^\/\w+$/</span>);</span><br><span class="line"></span><br><span class="line">workspaces.on(<span class="string">'connection'</span>, socket =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> workspace = socket.nsp;</span><br><span class="line"></span><br><span class="line">  workspace.emit(<span class="string">'hello'</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// this middleware will be assigned to each namespace</span></span><br><span class="line">workspaces.use(<span class="function">(<span class="params">socket, next</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="comment">// ensure the user has access to the workspace</span></span><br><span class="line">  next();</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Default-namespace"><a href="#Default-namespace" class="headerlink" title="Default namespace"></a>Default namespace</h2><p>We call the default namespace <code>/</code> and it’s the one Socket.IO clients connect to by default, and the one the server listens to by default.</p>
+<p>This namespace is identified by <code>io.sockets</code> or simply <code>io</code>:</p>
+<p>我们将默认名称空间称为/，它是一个默认连接的Socket.IO客户端，一个默认情况下服务器监听的名称空间。</p>
+<p>该名称空间由io.sockets或仅由io标识：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// the following two will emit to all the sockets connected to `/`</span></span><br><span class="line">io.sockets.emit(<span class="string">'hi'</span>, <span class="string">'everyone'</span>);</span><br><span class="line">io.emit(<span class="string">'hi'</span>, <span class="string">'everyone'</span>); <span class="comment">// short form</span></span><br></pre></td></tr></table></figure>
+
+<p>Each namespace emits a <code>connection</code> event that receives each <code>Socket</code> instance as a parameter</p>
+<p>每个名称空间都发出一个连接事件，该事件接收每个Socket实例作为参数</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">io.on(<span class="string">'connection'</span>, socket =&gt; &#123;</span><br><span class="line">  socket.on(<span class="string">'disconnect'</span>, () =&gt; &#123;&#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Custom-namespaces"><a href="#Custom-namespaces" class="headerlink" title="Custom namespaces"></a>Custom namespaces</h2><p>To set up a custom namespace, you can call the of function on the server-side:</p>
+<p>要设置自定义名称空间，可以在服务器端调用of函数：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> nsp = io.of(<span class="string">'/my-namespace'</span>);</span><br><span class="line"></span><br><span class="line">nsp.on(<span class="string">'connection'</span>, socket =&gt; &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'someone connected'</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">nsp.emit(<span class="string">'hi'</span>, <span class="string">'everyone!'</span>);</span><br></pre></td></tr></table></figure>
+
+<p>On the client side, you tell Socket.IO client to connect to that namespace:</p>
+<p>在客户端，您告诉Socket.IO客户端连接到该名称空间：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> socket = io(<span class="string">'/my-namespace'</span>);</span><br></pre></td></tr></table></figure>
+
+<p><strong>Important note:</strong> The namespace is an implementation detail of the Socket.IO protocol, and is not related to the actual URL of the underlying transport, which defaults to <code>/socket.io/…</code>.</p>
+<p>重要说明：名称空间是Socket.IO协议的实现细节，并且与基础传输的实际URL不相关，该URL默认为/socket.io/…。</p>
+<h2 id="Namespace-middleware（命名空间中间件）"><a href="#Namespace-middleware（命名空间中间件）" class="headerlink" title="Namespace middleware（命名空间中间件）"></a>Namespace middleware（命名空间中间件）</h2><p>A middleware is a function that gets executed for every incoming Socket, and receives as parameters the socket and a function to optionally defer execution to the next registered middleware. A Socket.IO middleware is very similar to what you can find in <a href="http://expressjs.com/en/guide/using-middleware.html" target="_blank" rel="noopener">Express</a>.</p>
+<p>中间件是为每个传入的Socket执行的函数，并接收该套接字和参数作为选择将执行推迟到下一个注册的中间件作为参数。 Socket.IO中间件与Express中非常相似。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// registers a middleware for the default namespace</span></span><br><span class="line">io.use(<span class="function">(<span class="params">socket, next</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (isValid(socket.request)) &#123;</span><br><span class="line">    next();</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    next(<span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'invalid'</span>));</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// registers a middleware for a custom namespace</span></span><br><span class="line">io.of(<span class="string">'/admin'</span>).use(<span class="keyword">async</span> (socket, next) =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> user = <span class="keyword">await</span> fetchUser(socket.handshake.query);</span><br><span class="line">  <span class="keyword">if</span> (user.isAdmin) &#123;</span><br><span class="line">    socket.user = user;</span><br><span class="line">    next();</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    next(<span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'forbidden'</span>));</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>You can register several middleware functions for the same namespace. They will be executed sequentially:</p>
+<p>您可以为同一名称空间注册多个中间件功能。 它们将按顺序执行：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">io.use(<span class="function">(<span class="params">socket, next</span>) =&gt;</span> &#123;</span><br><span class="line">  next();</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">io.use(<span class="function">(<span class="params">socket, next</span>) =&gt;</span> &#123;</span><br><span class="line">  next(<span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'thou shall not pass'</span>));</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">io.use(<span class="function">(<span class="params">socket, next</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="comment">// not executed, since the previous middleware has returned an error</span></span><br><span class="line">  next();</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Handling-middleware-error"><a href="#Handling-middleware-error" class="headerlink" title="Handling middleware error"></a>Handling middleware error</h2><p>If the <code>next</code> method is called with an Error object, the client will receive an <code>error</code> event.</p>
+<p>如果使用错误对象调用“下一个”方法，则客户端将收到一个“错误”事件。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> io <span class="keyword">from</span> <span class="string">'socket.io-client'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> socket = io();</span><br><span class="line"></span><br><span class="line">socket.on(<span class="string">'error'</span>, (reason) =&gt; &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(reason); <span class="comment">// prints the message associated with the error, e.g. "thou shall not pass" in the example above</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Compatibility-with-Express-middleware（与Express中间件的兼容性）"><a href="#Compatibility-with-Express-middleware（与Express中间件的兼容性）" class="headerlink" title="Compatibility with Express middleware（与Express中间件的兼容性）"></a>Compatibility with Express middleware（与Express中间件的兼容性）</h2><p>Most existing <a href="http://expressjs.com/en/resources/middleware.html" target="_blank" rel="noopener">Express middleware</a> modules should be compatible with Socket.IO, you just need a little wrapper function to make the method signatures match:</p>
+<p>大多数现有的Express中间件模块应与Socket.IO兼容，您只需要一个包装函数即可使方法签名匹配：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> wrap = <span class="function"><span class="params">middleware</span> =&gt;</span> <span class="function">(<span class="params">socket, next</span>) =&gt;</span> middleware(socket.request, &#123;&#125;, next);</span><br></pre></td></tr></table></figure>
+
+<p>The middleware functions that end the request-response cycle and do not call <code>next()</code> will not work though.</p>
+<p>Example with <a href="https://www.npmjs.com/package/express-session" target="_blank" rel="noopener">express-session</a>:</p>
+<p>但是，终止请求-响应周期并且不调用next（）的中间件函数将无法工作。</p>
+<p>快速会话示例：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> session = <span class="built_in">require</span>(<span class="string">'express-session'</span>);</span><br><span class="line"></span><br><span class="line">io.use(wrap(session(&#123; <span class="attr">secret</span>: <span class="string">'cats'</span> &#125;)));</span><br><span class="line"></span><br><span class="line">io.on(<span class="string">'connect'</span>, (socket) =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> session = socket.request.session;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>Example with <a href="http://www.passportjs.org/" target="_blank" rel="noopener">Passport</a>:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> session = <span class="built_in">require</span>(<span class="string">'express-session'</span>);</span><br><span class="line"><span class="keyword">const</span> passport = <span class="built_in">require</span>(<span class="string">'passport'</span>);</span><br><span class="line"></span><br><span class="line">io.use(wrap(session(&#123; <span class="attr">secret</span>: <span class="string">'cats'</span> &#125;)));</span><br><span class="line">io.use(wrap(passport.initialize()));</span><br><span class="line">io.use(wrap(passport.session()));</span><br><span class="line"></span><br><span class="line">io.use(<span class="function">(<span class="params">socket, next</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (socket.request.user) &#123;</span><br><span class="line">    next();</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    next(<span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'unauthorized'</span>))</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>A complete example with Passport can be found <a href="https://github.com/socketio/socket.io/tree/master/examples/passport-example" target="_blank" rel="noopener">here</a>.</p>
+<p>Caught a mistake? Edit this page on <a href="https://github.com/socketio/socket.io-website/blob/master/source/docs/namespaces.md" target="_blank" rel="noopener">GitHub</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/08/30/Socket.io/server/3.%20Namespaces/" data-id="ckejc3t6o0009vcxnh8pz9f4h" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Socket.io/server/2. Initialization" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/08/30/Socket.io/server/2.%20Initialization/" class="article-date">
+  <time datetime="2020-08-30T02:45:22.996Z" itemprop="datePublished">2020-08-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/08/30/Socket.io/server/2.%20Initialization/">Socket.io/server/2. Initialization</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Once you have <a href="https://socket.io/docs/server-installation/" target="_blank" rel="noopener">installed</a> the Socket.IO server library, you can now init the server. The complete list of options can be found <a href="https://socket.io/docs/server-api/#new-Server-httpServer-options" target="_blank" rel="noopener">here</a>.</p>
+<p>一旦安装了Socket.IO服务器库，就可以初始化服务器了。 选项的完整列表可以在这里找到。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> options = &#123; <span class="comment">/* ... */</span> &#125;;</span><br><span class="line"><span class="keyword">const</span> io = <span class="built_in">require</span>(<span class="string">'socket.io'</span>)(options);</span><br><span class="line"></span><br><span class="line">io.on(<span class="string">'connection'</span>, socket =&gt; &#123; <span class="comment">/* ... */</span> &#125;);</span><br><span class="line"></span><br><span class="line">io.listen(<span class="number">3000</span>);</span><br></pre></td></tr></table></figure>
+
+<p>You can also pass the port as the first argument:</p>
+<p>您还可以将端口作为第一个参数传递：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> options = &#123; <span class="comment">/* ... */</span> &#125;;</span><br><span class="line"><span class="keyword">const</span> io = <span class="built_in">require</span>(<span class="string">'socket.io'</span>)(<span class="number">3000</span>, options);</span><br><span class="line"></span><br><span class="line">io.on(<span class="string">'connection'</span>, socket =&gt; &#123; <span class="comment">/* ... */</span> &#125;);</span><br></pre></td></tr></table></figure>
+
+<p>This implicitly starts a Node.js <a href="https://nodejs.org/docs/latest/api/http.html#http_class_http_server" target="_blank" rel="noopener">HTTP server</a>, which can be accessed through <code>io.httpServer</code>.</p>
+<p>这将隐式启动Node.js HTTP服务器，可以通过io.httpServer对其进行访问。</p>
+<h2 id="Attached-to-an-existing-HTTP-server"><a href="#Attached-to-an-existing-HTTP-server" class="headerlink" title="Attached to an existing HTTP server"></a>Attached to an existing HTTP server</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> server = <span class="built_in">require</span>(<span class="string">'http'</span>).createServer();</span><br><span class="line"><span class="keyword">const</span> options = &#123; <span class="comment">/* ... */</span> &#125;;</span><br><span class="line"><span class="keyword">const</span> io = <span class="built_in">require</span>(<span class="string">'socket.io'</span>)(server, options);</span><br><span class="line"></span><br><span class="line">io.on(<span class="string">'connection'</span>, socket =&gt; &#123; <span class="comment">/* ... */</span> &#125;);</span><br><span class="line"></span><br><span class="line">server.listen(<span class="number">3000</span>);</span><br></pre></td></tr></table></figure>
+
+<p>With HTTPS:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"><span class="keyword">const</span> server = <span class="built_in">require</span>(<span class="string">'https'</span>).createServer(&#123;</span><br><span class="line">  key: fs.readFileSync(<span class="string">'/tmp/key.pem'</span>),</span><br><span class="line">  cert: fs.readFileSync(<span class="string">'/tmp/cert.pem'</span>)</span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">const</span> options = &#123; <span class="comment">/* ... */</span> &#125;;</span><br><span class="line"><span class="keyword">const</span> io = <span class="built_in">require</span>(<span class="string">'socket.io'</span>)(server, options);</span><br><span class="line"></span><br><span class="line">io.on(<span class="string">'connection'</span>, socket =&gt; &#123; <span class="comment">/* ... */</span> &#125;);</span><br><span class="line"></span><br><span class="line">server.listen(<span class="number">3000</span>);</span><br></pre></td></tr></table></figure>
+
+<h2 id="With-Express"><a href="#With-Express" class="headerlink" title="With Express"></a>With Express</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> app = <span class="built_in">require</span>(<span class="string">'express'</span>)();</span><br><span class="line"><span class="keyword">const</span> server = <span class="built_in">require</span>(<span class="string">'http'</span>).createServer(app);</span><br><span class="line"><span class="keyword">const</span> options = &#123; <span class="comment">/* ... */</span> &#125;;</span><br><span class="line"><span class="keyword">const</span> io = <span class="built_in">require</span>(<span class="string">'socket.io'</span>)(server, options);</span><br><span class="line"></span><br><span class="line">io.on(<span class="string">'connection'</span>, socket =&gt; &#123; <span class="comment">/* ... */</span> &#125;);</span><br><span class="line"></span><br><span class="line">server.listen(<span class="number">3000</span>);</span><br></pre></td></tr></table></figure>
+
+<p>More information <a href="http://expressjs.com/" target="_blank" rel="noopener">here</a>.</p>
+<h2 id="With-Koa"><a href="#With-Koa" class="headerlink" title="With Koa"></a>With Koa</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> app = <span class="built_in">require</span>(<span class="string">'koa'</span>)();</span><br><span class="line"><span class="keyword">const</span> server = <span class="built_in">require</span>(<span class="string">'http'</span>).createServer(app.callback());</span><br><span class="line"><span class="keyword">const</span> options = &#123; <span class="comment">/* ... */</span> &#125;;</span><br><span class="line"><span class="keyword">const</span> io = <span class="built_in">require</span>(<span class="string">'socket.io'</span>)(server, options);</span><br><span class="line"></span><br><span class="line">io.on(<span class="string">'connection'</span>, socket =&gt; &#123; <span class="comment">/* ... */</span> &#125;);</span><br><span class="line"></span><br><span class="line">server.listen(<span class="number">3000</span>);</span><br></pre></td></tr></table></figure>
+
+<p>More information <a href="https://koajs.com/" target="_blank" rel="noopener">here</a>.</p>
+<h2 id="Notable-options（值得注意的配置）"><a href="#Notable-options（值得注意的配置）" class="headerlink" title="Notable options（值得注意的配置）"></a>Notable options（值得注意的配置）</h2><p>The complete list of options can be found <a href="https://socket.io/docs/server-api/#new-Server-httpServer-options" target="_blank" rel="noopener">here</a>. Here are those which you will most likely use:</p>
+<p>选项的完整列表可以在这里找到。 以下是您最有可能使用的那些：</p>
+<h3 id="perMessageDeflate-option（perMessageDeflate选项）"><a href="#perMessageDeflate-option（perMessageDeflate选项）" class="headerlink" title="perMessageDeflate option（perMessageDeflate选项）"></a><code>perMessageDeflate</code> option（perMessageDeflate选项）</h3><p>Default value: <code>true</code></p>
+<p>The WebSocket server provided by the <a href="https://www.npmjs.com/package/ws" target="_blank" rel="noopener">ws</a> package supports the <a href="https://tools.ietf.org/html/rfc7692" target="_blank" rel="noopener">permessage-deflate extension</a>, which enables the client and server to negotiate a compression algorithm and its parameters, and then selectively apply it to the data payloads of each WebSocket message.</p>
+<p>As of Socket.IO v2, it is <strong>enabled</strong> by default, though it adds a significant overhead in terms of performance and memory consumption (and the ws maintainers <a href="https://github.com/websockets/ws#websocket-compression" target="_blank" rel="noopener">suggest</a> to only enable it if it is really needed).</p>
+<p>So you can disable it with:</p>
+<p>默认值：true</p>
+<p>ws软件包提供的WebSocket服务器支持permessage-deflate扩展，该扩展使客户端和服务器能够协商压缩算法及其参数，然后有选择地将其应用于每个WebSocket消息的数据有效载荷。</p>
+<p>从Socket.IO v2开始，默认情况下启用了该功能，尽管它在性能和内存消耗方面增加了可观的开销（并且ws维护人员建议仅在确实需要时才启用它）。</p>
+<p>因此，您可以通过以下方式禁用它：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> io = <span class="built_in">require</span>(<span class="string">'socket.io'</span>)(&#123;</span><br><span class="line">  perMessageDeflate: <span class="literal">false</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>Please note that it will be disabled by default in Socket.IO v3.</p>
+<p>请注意，默认情况下它将在Socket.IO v3中禁用。</p>
+<h3 id="maxHttpBufferSize-option（maxHttpBufferSize选项）"><a href="#maxHttpBufferSize-option（maxHttpBufferSize选项）" class="headerlink" title="maxHttpBufferSize option（maxHttpBufferSize选项）"></a><code>maxHttpBufferSize</code> option（maxHttpBufferSize选项）</h3><p>Default value: <code>10e7</code></p>
+<p>This defines how many bytes a message can be, before closing the socket. It defaults to <code>10e7</code> (100MB). You may increase or decrement this value depending on your needs.</p>
+<p>默认值：10e7</p>
+<p>这定义了在关闭套接字之前消息可以为多少字节。 默认为10e7（100MB）。 您可以根据需要增加或减少该值。</p>
+<p>It matches the <a href="https://github.com/websockets/ws/blob/master/doc/ws.md#new-websocketserveroptions-callback" target="_blank" rel="noopener">maxPayload</a> option of the ws package.</p>
+<p>它与ws软件包的maxPayload选项匹配。</p>
+<p>Caught a mistake? Edit this page on <a href="https://github.com/socketio/socket.io-website/blob/master/source/docs/server-inititialization.md" target="_blank" rel="noopener">GitHub</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/08/30/Socket.io/server/2.%20Initialization/" data-id="ckejc3t6m0006vcxnfn9icgri" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Socket.io/server/1. Installation" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/08/30/Socket.io/server/1.%20Installation/" class="article-date">
+  <time datetime="2020-08-30T02:26:03.619Z" itemprop="datePublished">2020-08-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/08/30/Socket.io/server/1.%20Installation/">Socket.io/server/1. Installation</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Prerequisites（先决条件）"><a href="#Prerequisites（先决条件）" class="headerlink" title="Prerequisites（先决条件）"></a>Prerequisites（先决条件）</h2><p>Please make sure that <a href="https://nodejs.org/en/" target="_blank" rel="noopener">Node.js</a> is installed on your system. The current Long Term Support (LTS) release is an ideal starting point.</p>
+<p>At least Node.js 8 is needed, older versions are not supported anymore.</p>
+<p>请确保您的系统上已安装Node.js。 当前的长期支持（LTS）版本是理想的起点。</p>
+<p>至少需要Node.js 8，不再支持旧版本。</p>
+<h2 id="Installation"><a href="#Installation" class="headerlink" title="Installation"></a>Installation</h2><p>The latest Socket.IO release is:</p>
+<p><a href="https://www.npmjs.com/package/socket.io" target="_blank" rel="noopener"><img src="https://img.shields.io/npm/v/socket.io.svg?logo=npm" alt="NPM version"></a></p>
+<p>To install the latest release:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install socket.io</span><br></pre></td></tr></table></figure>
+
+<p>To install a specific version:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install socket.io@&lt;version&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Additional-packages（其他包）"><a href="#Additional-packages（其他包）" class="headerlink" title="Additional packages（其他包）"></a>Additional packages（其他包）</h2><p>By default, Socket.IO use the WebSocket server provided by the <a href="https://www.npmjs.com/package/ws" target="_blank" rel="noopener">ws</a> package.</p>
+<p>There are 2 optional packages that can be installed alongside this package. These packages are binary add-ons which improve certain operations. Prebuilt binaries are available for the most popular platforms so you don’t necessarily need to have a C++ compiler installed on your machine.</p>
+<ul>
+<li><a href="https://www.npmjs.com/package/bufferutil" target="_blank" rel="noopener">bufferutil</a>: Allows to efficiently perform operations such as masking and unmasking the data payload of the WebSocket frames.</li>
+<li><a href="https://www.npmjs.com/package/utf-8-validate" target="_blank" rel="noopener">utf-8-validate</a>: Allows to efficiently check if a message contains valid UTF-8 as required by the spec.</li>
+</ul>
+<p>To install those packages:</p>
+<p>默认情况下，Socket.IO使用ws软件包提供的WebSocket服务器。</p>
+<p>可以在此软件包的旁边安装2个可选软件包。 这些软件包是二进制附件，可改善某些操作。 预编译的二进制文件适用于大多数流行的平台，因此您不一定需要在计算机上安装C ++编译器。</p>
+<ul>
+<li><p>bufferutil：允许有效地执行操作，例如屏蔽和取消屏蔽WebSocket帧的数据有效负载。</p>
+</li>
+<li><p>utf-8-validate：可以有效地检查邮件是否包含规范要求的有效UTF-8。</p>
+</li>
+</ul>
+<p>要安装这些软件包：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install --save-optional bufferutil utf-8-validate</span><br></pre></td></tr></table></figure>
+
+<p>Please note that these packages are optional, the WebSocket server will fallback to the Javascript implementation if they are not available. More information can be found <a href="https://github.com/websockets/ws/#opt-in-for-performance-and-spec-compliance" target="_blank" rel="noopener">here</a>.</p>
+<p>请注意，这些软件包是可选的，如果WebSocket服务器不可用，它们将回退到Javascript实现。 更多信息可以在这里找到。</p>
+<h2 id="Other-WebSocket-server-implementations（其他WebSocket服务器实现）"><a href="#Other-WebSocket-server-implementations（其他WebSocket服务器实现）" class="headerlink" title="Other WebSocket server implementations（其他WebSocket服务器实现）"></a>Other WebSocket server implementations（其他WebSocket服务器实现）</h2><p>Any Websocket server implementation which exposes the same API as ws (notably the <a href="https://github.com/websockets/ws/blob/master/doc/ws.md#serverhandleupgraderequest-socket-head-callback" target="_blank" rel="noopener">handleUpgrade</a> method) can be used.</p>
+<p>For example, you can use the <a href="https://www.npmjs.com/package/eiows" target="_blank" rel="noopener">eiows</a> package, which is a fork of the (now deprecated) <a href="https://www.npmjs.com/package/uws" target="_blank" rel="noopener">uws</a> package:</p>
+<p>可以使用任何与ws公开相同API的Websocket服务器实现（特别是handleUpgrade方法）。</p>
+<p>例如，您可以使用eiows软件包，它是uws软件包（现已弃用）的分支：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install eiows</span><br></pre></td></tr></table></figure>
+
+<p>And then use the <code>wsEngine</code> option:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> io = <span class="built_in">require</span>(<span class="string">'socket.io'</span>)(<span class="number">3000</span>, &#123;</span><br><span class="line">  wsEngine: <span class="string">'eiows'</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>This implementation “allows, but doesn’t guarantee” significant performance and memory-usage improvements over the default implementation. As usual, please benchmark it against your own usage.</p>
+<p>与默认实现相比，此实现“允许但不能保证”性能和内存使用方面的重大改进。 与往常一样，请对照您自己的用法对其进行基准测试。</p>
+<p>Caught a mistake? Edit this page on <a href="https://github.com/socketio/socket.io-website/blob/master/source/docs/server-installation.md" target="_blank" rel="noopener">GitHub</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/08/30/Socket.io/server/1.%20Installation/" data-id="ckejc3t6n0008vcxn0u5u4hsw" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Socket.io/Documentation/3. Logging and debugging" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/08/30/Socket.io/Documentation/3.%20Logging%20and%20debugging/" class="article-date">
+  <time datetime="2020-08-30T02:22:22.126Z" itemprop="datePublished">2020-08-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/08/30/Socket.io/Documentation/3.%20Logging%20and%20debugging/">Socket.io/Documentation/3. Logging and debugging</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Socket.IO is now completely instrumented by a minimalistic yet tremendously powerful utility called <a href="https://github.com/visionmedia/debug" target="_blank" rel="noopener">debug</a> by TJ Holowaychuk.</p>
+<p>Before 1.0, the Socket.IO server would default to logging everything out to the console. This turned out to be annoyingly verbose for many users (although extremely useful for others), so now we default to being completely silent by default.</p>
+<p>The basic idea is that each module used by Socket.IO provides different debugging scopes that give you insight into the internals. By default, all output is suppressed, and you can opt into seeing messages by supplying the <code>DEBUG</code> env variable (Node.JS) or the <code>localStorage.debug</code> property (Browsers).</p>
+<p>You can see it in action for example on our homepage:</p>
+<p>Socket.IO现在完全由TJ Holowaychuk称为debug的简约但功能强大的实用程序完成。</p>
+<p>在1.0之前，Socket.IO服务器将默认将所有内容注销到控制台。 事实证明，这对于许多用户来说是非常烦人的（尽管对其他用户而言非常有用），因此现在默认情况下，我们默认为完全静音。</p>
+<p>基本思想是Socket.IO使用的每个模块都提供不同的调试作用域，使您可以深入了解内部。 默认情况下，所有输出都是禁止的，您可以通过提供DEBUG env变量（Node.JS）或localStorage.debug属性（浏览器）来选择查看消息。</p>
+<p>您可以在我们的主页上看到它的实际运行情况：</p>
+<h2 id="Available-debugging-scopes"><a href="#Available-debugging-scopes" class="headerlink" title="Available debugging scopes"></a>Available debugging scopes</h2><p>The best way to see what information is available is to use the <code>*</code>:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DEBUG=* node yourfile.js</span><br></pre></td></tr></table></figure>
+
+<p>or in the browser:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">localStorage.debug = '*';</span><br></pre></td></tr></table></figure>
+
+<p>And then filter by the scopes you’re interested in. You can prefix the <code>*</code> with scopes, separated by comma if there is more than one. For example, to only see debug statements from the socket.io client on Node.js try this:</p>
+<p>然后按感兴趣的范围进行过滤。您可以在*前面加上范围，如果有多个，则以逗号分隔。 例如，要仅查看Node.js上来自socket.io客户端的调试语句，请尝试以下操作：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DEBUG=socket.io:client* node yourfile.js</span><br></pre></td></tr></table></figure>
+
+<p>To see all debug messages from the engine <em>and</em> socket.io:</p>
+<p>要查看来自engine和socket.io的所有调试消息：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DEBUG=engine,socket.io* node yourfile.js</span><br></pre></td></tr></table></figure>
+
+<p>Caught a mistake? Edit this page on <a href="https://github.com/socketio/socket.io-website/blob/master/source/docs/logging-and-debugging.md" target="_blank" rel="noopener">GitHub</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/08/30/Socket.io/Documentation/3.%20Logging%20and%20debugging/" data-id="ckejc3t6j0001vcxn50a0alue" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Socket.io/Documentation/2. Emit cheatsheet" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/08/30/Socket.io/Documentation/2.%20Emit%20cheatsheet/" class="article-date">
+  <time datetime="2020-08-30T02:18:14.578Z" itemprop="datePublished">2020-08-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/08/30/Socket.io/Documentation/2.%20Emit%20cheatsheet/">Socket.io/Documentation/2. Emit cheatsheet</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">io.on(<span class="string">'connect'</span>, onConnect);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">onConnect</span>(<span class="params">socket</span>)</span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// sending to the client</span></span><br><span class="line">  socket.emit(<span class="string">'hello'</span>, <span class="string">'can you hear me?'</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="string">'abc'</span>);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// sending to all clients except sender</span></span><br><span class="line">  socket.broadcast.emit(<span class="string">'broadcast'</span>, <span class="string">'hello friends!'</span>);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// sending to all clients in 'game' room except sender</span></span><br><span class="line">  socket.to(<span class="string">'game'</span>).emit(<span class="string">'nice game'</span>, <span class="string">"let's play a game"</span>);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// sending to all clients in 'game1' and/or in 'game2' room, except sender</span></span><br><span class="line">  socket.to(<span class="string">'game1'</span>).to(<span class="string">'game2'</span>).emit(<span class="string">'nice game'</span>, <span class="string">"let's play a game (too)"</span>);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// sending to all clients in 'game' room, including sender</span></span><br><span class="line">  io.in(<span class="string">'game'</span>).emit(<span class="string">'big-announcement'</span>, <span class="string">'the game will start soon'</span>);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// sending to all clients in namespace 'myNamespace', including sender</span></span><br><span class="line">  io.of(<span class="string">'myNamespace'</span>).emit(<span class="string">'bigger-announcement'</span>, <span class="string">'the tournament will start soon'</span>);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// sending to a specific room in a specific namespace, including sender</span></span><br><span class="line">  io.of(<span class="string">'myNamespace'</span>).to(<span class="string">'room'</span>).emit(<span class="string">'event'</span>, <span class="string">'message'</span>);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// sending to individual socketid (private message)</span></span><br><span class="line">  io.to(socketId).emit(<span class="string">'hey'</span>, <span class="string">'I just met you'</span>);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// WARNING: `socket.to(socket.id).emit()` will NOT work, as it will send to everyone in the room</span></span><br><span class="line">  <span class="comment">// named `socket.id` but the sender. Please use the classic `socket.emit()` instead.</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// sending with acknowledgement</span></span><br><span class="line">  socket.emit(<span class="string">'question'</span>, <span class="string">'do you think so?'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">answer</span>) </span>&#123;&#125;);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// sending without compression</span></span><br><span class="line">  socket.compress(<span class="literal">false</span>).emit(<span class="string">'uncompressed'</span>, <span class="string">"that's rough"</span>);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// sending a message that might be dropped if the client is not ready to receive messages</span></span><br><span class="line">  socket.volatile.emit(<span class="string">'maybe'</span>, <span class="string">'do you really need it?'</span>);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// specifying whether the data to send has binary data</span></span><br><span class="line">  socket.binary(<span class="literal">false</span>).emit(<span class="string">'what'</span>, <span class="string">'I have no binaries!'</span>);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// sending to all clients on this node (when using multiple nodes)</span></span><br><span class="line">  io.local.emit(<span class="string">'hi'</span>, <span class="string">'my lovely babies'</span>);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// sending to all connected clients</span></span><br><span class="line">  io.emit(<span class="string">'an event sent to all connected clients'</span>);</span><br><span class="line"></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><strong>Note:</strong> The following events are reserved and should not be used as event names by your application:</p>
+<ul>
+<li><code>connect</code></li>
+<li><code>connect_error</code></li>
+<li><code>connect_timeout</code></li>
+<li><code>error</code></li>
+<li><code>disconnect</code></li>
+<li><code>disconnecting</code></li>
+<li><code>newListener</code></li>
+<li><code>reconnect_attempt</code></li>
+<li><code>reconnecting</code></li>
+<li><code>reconnect_error</code></li>
+<li><code>reconnect_failed</code></li>
+<li><code>removeListener</code></li>
+<li><code>ping</code></li>
+<li><code>pong</code></li>
+</ul>
+<p>Caught a mistake? Edit this page on <a href="https://github.com/socketio/socket.io-website/blob/master/source/docs/emit-cheatsheet.md" target="_blank" rel="noopener">GitHub</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/08/30/Socket.io/Documentation/2.%20Emit%20cheatsheet/" data-id="ckejc3t6j0002vcxn2r342gas" class="article-share-link">Share</a>
       
       
     </footer>
@@ -352,6 +966,11 @@
 
   
 
+
+  <nav id="page-nav">
+    
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next &amp;raquo;</a>
+  </nav>
 
 </section>
         
@@ -383,7 +1002,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">June 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">May 2020</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">August 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">June 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">May 2020</a></li></ul>
     </div>
   </div>
 
@@ -396,19 +1015,23 @@
       <ul>
         
           <li>
-            <a href="/2020/06/14/%E8%A7%A3%E5%86%B3-React-%E4%B8%AD%E7%9A%84-input-%E8%BE%93%E5%85%A5%E6%A1%86%E5%9C%A8%E4%B8%AD%E6%96%87%E8%BE%93%E5%85%A5%E6%B3%95%E4%B8%8B%E7%9A%84-bug/">解决 React 中的 input 输入框在中文输入法下的 bug</a>
+            <a href="/2020/08/30/Socket.io/client/3.%20Connection%20lifecycle/">Socket.io/client/3. Connection lifecycle</a>
           </li>
         
           <li>
-            <a href="/2020/05/25/GridManager-%E8%A1%A8%E6%A0%BC%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE/">GridManager 表格常用配置</a>
+            <a href="/2020/08/30/Socket.io/client/2.%20Initialization/">Socket.io/client/2. Initialization</a>
           </li>
         
           <li>
-            <a href="/2020/05/25/%E5%AE%89%E8%A3%85-Linux-%E7%89%88%E6%9C%AC%E4%B8%BA%E7%9F%A5%E7%AC%94%E8%AE%B0/">安装 Linux 版本为知笔记</a>
+            <a href="/2020/08/30/Socket.io/client/1.%20Installation/">Socket.io/client/1. Installation</a>
           </li>
         
           <li>
-            <a href="/2020/05/25/%E4%BD%BF%E7%94%A8Hexo-Github%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/">使用Hexo + Github搭建博客</a>
+            <a href="/2020/08/30/Socket.io/server/5.%20Using%20multiple%20nodes/">Socket.io/server/5. Using multiple nodes</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/30/Socket.io/server/4.%20Rooms/">Socket.io/server/4. Rooms</a>
           </li>
         
       </ul>

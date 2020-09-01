@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Socket.io/server/2. Initialization | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Once you have installed the Socket.IO server library, you can now init the server. The complete list of options can be found here. 一旦安装了Socket.IO服务器库，就可以初始化服务器了。 选项的完整列表可以在这里找到。 123456const options &#x3D;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Socket.io&#x2F;server&#x2F;2. Initialization">
+<meta property="og:url" content="http://yoursite.com/2020/08/30/Socket.io/server/2.%20Initialization/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Once you have installed the Socket.IO server library, you can now init the server. The complete list of options can be found here. 一旦安装了Socket.IO服务器库，就可以初始化服务器了。 选项的完整列表可以在这里找到。 123456const options &#x3D;">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-08-30T02:45:22.996Z">
+<meta property="article:modified_time" content="2020-08-30T02:59:33.562Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">LilyMeng's Blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a class="nav-icon" style="width: 46px" href="https://github.com/liyuan-meng" target="_blank">Github</a>
+        
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-Socket.io/server/2. Initialization" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/08/30/Socket.io/server/2.%20Initialization/" class="article-date">
+  <time datetime="2020-08-30T02:45:22.996Z" itemprop="datePublished">2020-08-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Socket.io/server/2. Initialization
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Once you have <a href="https://socket.io/docs/server-installation/" target="_blank" rel="noopener">installed</a> the Socket.IO server library, you can now init the server. The complete list of options can be found <a href="https://socket.io/docs/server-api/#new-Server-httpServer-options" target="_blank" rel="noopener">here</a>.</p>
+<p>一旦安装了Socket.IO服务器库，就可以初始化服务器了。 选项的完整列表可以在这里找到。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> options = &#123; <span class="comment">/* ... */</span> &#125;;</span><br><span class="line"><span class="keyword">const</span> io = <span class="built_in">require</span>(<span class="string">'socket.io'</span>)(options);</span><br><span class="line"></span><br><span class="line">io.on(<span class="string">'connection'</span>, socket =&gt; &#123; <span class="comment">/* ... */</span> &#125;);</span><br><span class="line"></span><br><span class="line">io.listen(<span class="number">3000</span>);</span><br></pre></td></tr></table></figure>
+
+<p>You can also pass the port as the first argument:</p>
+<p>您还可以将端口作为第一个参数传递：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> options = &#123; <span class="comment">/* ... */</span> &#125;;</span><br><span class="line"><span class="keyword">const</span> io = <span class="built_in">require</span>(<span class="string">'socket.io'</span>)(<span class="number">3000</span>, options);</span><br><span class="line"></span><br><span class="line">io.on(<span class="string">'connection'</span>, socket =&gt; &#123; <span class="comment">/* ... */</span> &#125;);</span><br></pre></td></tr></table></figure>
+
+<p>This implicitly starts a Node.js <a href="https://nodejs.org/docs/latest/api/http.html#http_class_http_server" target="_blank" rel="noopener">HTTP server</a>, which can be accessed through <code>io.httpServer</code>.</p>
+<p>这将隐式启动Node.js HTTP服务器，可以通过io.httpServer对其进行访问。</p>
+<h2 id="Attached-to-an-existing-HTTP-server"><a href="#Attached-to-an-existing-HTTP-server" class="headerlink" title="Attached to an existing HTTP server"></a>Attached to an existing HTTP server</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> server = <span class="built_in">require</span>(<span class="string">'http'</span>).createServer();</span><br><span class="line"><span class="keyword">const</span> options = &#123; <span class="comment">/* ... */</span> &#125;;</span><br><span class="line"><span class="keyword">const</span> io = <span class="built_in">require</span>(<span class="string">'socket.io'</span>)(server, options);</span><br><span class="line"></span><br><span class="line">io.on(<span class="string">'connection'</span>, socket =&gt; &#123; <span class="comment">/* ... */</span> &#125;);</span><br><span class="line"></span><br><span class="line">server.listen(<span class="number">3000</span>);</span><br></pre></td></tr></table></figure>
+
+<p>With HTTPS:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"><span class="keyword">const</span> server = <span class="built_in">require</span>(<span class="string">'https'</span>).createServer(&#123;</span><br><span class="line">  key: fs.readFileSync(<span class="string">'/tmp/key.pem'</span>),</span><br><span class="line">  cert: fs.readFileSync(<span class="string">'/tmp/cert.pem'</span>)</span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">const</span> options = &#123; <span class="comment">/* ... */</span> &#125;;</span><br><span class="line"><span class="keyword">const</span> io = <span class="built_in">require</span>(<span class="string">'socket.io'</span>)(server, options);</span><br><span class="line"></span><br><span class="line">io.on(<span class="string">'connection'</span>, socket =&gt; &#123; <span class="comment">/* ... */</span> &#125;);</span><br><span class="line"></span><br><span class="line">server.listen(<span class="number">3000</span>);</span><br></pre></td></tr></table></figure>
+
+<h2 id="With-Express"><a href="#With-Express" class="headerlink" title="With Express"></a>With Express</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> app = <span class="built_in">require</span>(<span class="string">'express'</span>)();</span><br><span class="line"><span class="keyword">const</span> server = <span class="built_in">require</span>(<span class="string">'http'</span>).createServer(app);</span><br><span class="line"><span class="keyword">const</span> options = &#123; <span class="comment">/* ... */</span> &#125;;</span><br><span class="line"><span class="keyword">const</span> io = <span class="built_in">require</span>(<span class="string">'socket.io'</span>)(server, options);</span><br><span class="line"></span><br><span class="line">io.on(<span class="string">'connection'</span>, socket =&gt; &#123; <span class="comment">/* ... */</span> &#125;);</span><br><span class="line"></span><br><span class="line">server.listen(<span class="number">3000</span>);</span><br></pre></td></tr></table></figure>
+
+<p>More information <a href="http://expressjs.com/" target="_blank" rel="noopener">here</a>.</p>
+<h2 id="With-Koa"><a href="#With-Koa" class="headerlink" title="With Koa"></a>With Koa</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> app = <span class="built_in">require</span>(<span class="string">'koa'</span>)();</span><br><span class="line"><span class="keyword">const</span> server = <span class="built_in">require</span>(<span class="string">'http'</span>).createServer(app.callback());</span><br><span class="line"><span class="keyword">const</span> options = &#123; <span class="comment">/* ... */</span> &#125;;</span><br><span class="line"><span class="keyword">const</span> io = <span class="built_in">require</span>(<span class="string">'socket.io'</span>)(server, options);</span><br><span class="line"></span><br><span class="line">io.on(<span class="string">'connection'</span>, socket =&gt; &#123; <span class="comment">/* ... */</span> &#125;);</span><br><span class="line"></span><br><span class="line">server.listen(<span class="number">3000</span>);</span><br></pre></td></tr></table></figure>
+
+<p>More information <a href="https://koajs.com/" target="_blank" rel="noopener">here</a>.</p>
+<h2 id="Notable-options（值得注意的配置）"><a href="#Notable-options（值得注意的配置）" class="headerlink" title="Notable options（值得注意的配置）"></a>Notable options（值得注意的配置）</h2><p>The complete list of options can be found <a href="https://socket.io/docs/server-api/#new-Server-httpServer-options" target="_blank" rel="noopener">here</a>. Here are those which you will most likely use:</p>
+<p>选项的完整列表可以在这里找到。 以下是您最有可能使用的那些：</p>
+<h3 id="perMessageDeflate-option（perMessageDeflate选项）"><a href="#perMessageDeflate-option（perMessageDeflate选项）" class="headerlink" title="perMessageDeflate option（perMessageDeflate选项）"></a><code>perMessageDeflate</code> option（perMessageDeflate选项）</h3><p>Default value: <code>true</code></p>
+<p>The WebSocket server provided by the <a href="https://www.npmjs.com/package/ws" target="_blank" rel="noopener">ws</a> package supports the <a href="https://tools.ietf.org/html/rfc7692" target="_blank" rel="noopener">permessage-deflate extension</a>, which enables the client and server to negotiate a compression algorithm and its parameters, and then selectively apply it to the data payloads of each WebSocket message.</p>
+<p>As of Socket.IO v2, it is <strong>enabled</strong> by default, though it adds a significant overhead in terms of performance and memory consumption (and the ws maintainers <a href="https://github.com/websockets/ws#websocket-compression" target="_blank" rel="noopener">suggest</a> to only enable it if it is really needed).</p>
+<p>So you can disable it with:</p>
+<p>默认值：true</p>
+<p>ws软件包提供的WebSocket服务器支持permessage-deflate扩展，该扩展使客户端和服务器能够协商压缩算法及其参数，然后有选择地将其应用于每个WebSocket消息的数据有效载荷。</p>
+<p>从Socket.IO v2开始，默认情况下启用了该功能，尽管它在性能和内存消耗方面增加了可观的开销（并且ws维护人员建议仅在确实需要时才启用它）。</p>
+<p>因此，您可以通过以下方式禁用它：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> io = <span class="built_in">require</span>(<span class="string">'socket.io'</span>)(&#123;</span><br><span class="line">  perMessageDeflate: <span class="literal">false</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>Please note that it will be disabled by default in Socket.IO v3.</p>
+<p>请注意，默认情况下它将在Socket.IO v3中禁用。</p>
+<h3 id="maxHttpBufferSize-option（maxHttpBufferSize选项）"><a href="#maxHttpBufferSize-option（maxHttpBufferSize选项）" class="headerlink" title="maxHttpBufferSize option（maxHttpBufferSize选项）"></a><code>maxHttpBufferSize</code> option（maxHttpBufferSize选项）</h3><p>Default value: <code>10e7</code></p>
+<p>This defines how many bytes a message can be, before closing the socket. It defaults to <code>10e7</code> (100MB). You may increase or decrement this value depending on your needs.</p>
+<p>默认值：10e7</p>
+<p>这定义了在关闭套接字之前消息可以为多少字节。 默认为10e7（100MB）。 您可以根据需要增加或减少该值。</p>
+<p>It matches the <a href="https://github.com/websockets/ws/blob/master/doc/ws.md#new-websocketserveroptions-callback" target="_blank" rel="noopener">maxPayload</a> option of the ws package.</p>
+<p>它与ws软件包的maxPayload选项匹配。</p>
+<p>Caught a mistake? Edit this page on <a href="https://github.com/socketio/socket.io-website/blob/master/source/docs/server-inititialization.md" target="_blank" rel="noopener">GitHub</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/08/30/Socket.io/server/2.%20Initialization/" data-id="ckejc3t6m0006vcxnfn9icgri" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2020/08/30/Socket.io/server/3.%20Namespaces/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Socket.io/server/3. Namespaces
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2020/08/30/Socket.io/server/1.%20Installation/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Socket.io/server/1. Installation</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/GridManager/" rel="tag">GridManager</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux-%E4%B8%BA%E7%9F%A5%E7%AC%94%E8%AE%B0/" rel="tag">Linux 为知笔记</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/GridManager/" style="font-size: 10px;">GridManager</a> <a href="/tags/Linux-%E4%B8%BA%E7%9F%A5%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">Linux 为知笔记</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">August 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">June 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">May 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/08/30/Socket.io/client/3.%20Connection%20lifecycle/">Socket.io/client/3. Connection lifecycle</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/30/Socket.io/client/2.%20Initialization/">Socket.io/client/2. Initialization</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/30/Socket.io/client/1.%20Installation/">Socket.io/client/1. Installation</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/30/Socket.io/server/5.%20Using%20multiple%20nodes/">Socket.io/server/5. Using multiple nodes</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/30/Socket.io/server/4.%20Rooms/">Socket.io/server/4. Rooms</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

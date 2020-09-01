@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Socket.io/server/4. Rooms | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Within each Namespace, you can define arbitrary channels called “Rooms” that sockets can join and leave. This is useful to broadcast data to a subset of sockets: 在每个[名称空间]（https:&#x2F;&#x2F;socket.io&#x2F;docs&#x2F;names">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Socket.io&#x2F;server&#x2F;4. Rooms">
+<meta property="og:url" content="http://yoursite.com/2020/08/30/Socket.io/server/4.%20Rooms/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Within each Namespace, you can define arbitrary channels called “Rooms” that sockets can join and leave. This is useful to broadcast data to a subset of sockets: 在每个[名称空间]（https:&#x2F;&#x2F;socket.io&#x2F;docs&#x2F;names">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://socket.io/images/rooms.png">
+<meta property="article:published_time" content="2020-08-30T03:14:11.845Z">
+<meta property="article:modified_time" content="2020-08-30T03:26:50.416Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://socket.io/images/rooms.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">LilyMeng's Blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a class="nav-icon" style="width: 46px" href="https://github.com/liyuan-meng" target="_blank">Github</a>
+        
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-Socket.io/server/4. Rooms" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/08/30/Socket.io/server/4.%20Rooms/" class="article-date">
+  <time datetime="2020-08-30T03:14:11.845Z" itemprop="datePublished">2020-08-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Socket.io/server/4. Rooms
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Within each <a href="https://socket.io/docs/namespaces/" target="_blank" rel="noopener">Namespace</a>, you can define arbitrary channels called “Rooms” that sockets can <code>join</code> and <code>leave</code>.</p>
+<p>This is useful to broadcast data to a subset of sockets:</p>
+<p>在每个[名称空间]（<a href="https://socket.io/docs/namespaces/）中，您可以定义称为“房间”的任意通道，套接字可以“加入”和“离开”。" target="_blank" rel="noopener">https://socket.io/docs/namespaces/）中，您可以定义称为“房间”的任意通道，套接字可以“加入”和“离开”。</a></p>
+<p>这对于将数据广播到套接字的子集很有用：</p>
+<p><img src="https://socket.io/images/rooms.png" alt="Room diagram"></p>
+<h2 id="Joining-and-leaving"><a href="#Joining-and-leaving" class="headerlink" title="Joining and leaving"></a>Joining and leaving</h2><p>You can call <code>join</code> to subscribe the socket to a given channel:</p>
+<p>您可以调用<code>join</code>来将套接字订阅到给定的频道：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">io.on(<span class="string">'connection'</span>, socket =&gt; &#123;</span><br><span class="line">  socket.join(<span class="string">'some room'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>And then simply use <code>to</code> or <code>in</code> (they are the same) when broadcasting or emitting:</p>
+<p>然后在广播或发射时简单地使用to或in（它们相同）：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">io.to(<span class="string">'some room'</span>).emit(<span class="string">'some event'</span>);</span><br></pre></td></tr></table></figure>
+
+<p>You can emit to several rooms at the same time:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">io.to(<span class="string">'room1'</span>).to(<span class="string">'room2'</span>).to(<span class="string">'room3'</span>).emit(<span class="string">'some event'</span>);</span><br></pre></td></tr></table></figure>
+
+<p>In that case, an <a href="https://en.wikipedia.org/wiki/Union_(set_theory)" target="_blank" rel="noopener">union</a> is performed: every socket that is at least in one of the rooms will get the event <strong>once</strong> (even if the socket is in two or more rooms).</p>
+<p>You can also broadcast to a room from a given socket:</p>
+<p>在这种情况下，将执行并集：至少在一个房间中的每个套接字都将获得一次事件（即使该套接字在两个或多个房间中）。</p>
+<p>You can also broadcast to a room from a given socket:</p>
+<p>您还可以从给定的套接字向房间广播：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">io.on(<span class="string">'connection'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">socket</span>)</span>&#123;</span><br><span class="line">  socket.to(<span class="string">'some room'</span>).emit(<span class="string">'some event'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>In that case, every sockets in the room <strong>excluding</strong> the sender will get the event.</p>
+<p>To leave a channel you call <code>leave</code> in the same fashion as <code>join</code>. Both methods are asynchronous and accept a <code>callback</code> argument.</p>
+<p>在这种情况下，会议室中除发送方之外的所有套接字都将获得事件。</p>
+<p>要离开频道，您呼叫离开的方式与加入相同。 这两种方法都是异步的，并且接受回调参数。</p>
+<h2 id="Default-room"><a href="#Default-room" class="headerlink" title="Default room"></a>Default room</h2><p>Each <code>Socket</code> in Socket.IO is identified by a random, unguessable, unique identifier <code>Socket#id</code>. For your convenience, each socket automatically joins a room identified by its own id.</p>
+<p>This makes it easy to broadcast messages to other sockets:</p>
+<p>Socket.IO中的每个Socket都由一个随机的，不可猜测的唯一标识符Socket＃id标识。 为了您的方便，每个插座会自动加入以其自己的ID标识的房间。</p>
+<p>这使得将消息广播到其他套接字变得容易：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">io.on(<span class="string">'connection'</span>, socket =&gt; &#123;</span><br><span class="line">  socket.on(<span class="string">'say to someone'</span>, (id, msg) =&gt; &#123;</span><br><span class="line">    socket.to(id).emit(<span class="string">'my message'</span>, msg);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Sample-use-cases"><a href="#Sample-use-cases" class="headerlink" title="Sample use cases"></a>Sample use cases</h2><ul>
+<li>broadcast data to each device / tab of a given user</li>
+<li>将数据广播到给定用户的每个设备/选项卡</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">io.on(<span class="string">'connection'</span>, <span class="keyword">async</span> (socket) =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> userId = <span class="keyword">await</span> fetchUserId(socket);</span><br><span class="line"></span><br><span class="line">  socket.join(userId);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// and then later</span></span><br><span class="line">  io.to(userId).emit(<span class="string">'hi'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>send notifications about a given entity</li>
+<li>发送有关给定实体的通知</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">io.on(<span class="string">'connection'</span>, <span class="keyword">async</span> (socket) =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> projects = <span class="keyword">await</span> fetchProjects(socket);</span><br><span class="line"></span><br><span class="line">  projects.forEach(<span class="function"><span class="params">project</span> =&gt;</span> socket.join(<span class="string">'project:'</span> + project.id));</span><br><span class="line"></span><br><span class="line">  socket.on(<span class="string">'update project'</span>, <span class="keyword">async</span> (payload) =&gt; &#123;</span><br><span class="line">    <span class="keyword">const</span> project = <span class="keyword">await</span> updateProject(payload);</span><br><span class="line">    io.to(<span class="string">'project:'</span> + project.id).emit(<span class="string">'project updated'</span>, project);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Disconnection"><a href="#Disconnection" class="headerlink" title="Disconnection"></a>Disconnection</h2><p>Upon disconnection, sockets <code>leave</code> all the channels they were part of automatically, and no special teardown is needed on your part.</p>
+<p>You can fetch the rooms the Socket was in by listening to the <code>disconnecting</code> event:</p>
+<p>断开连接后，套接字会自动离开它们所属的所有通道，您无需进行任何特殊拆卸。</p>
+<p>您可以通过侦听断开连接事件来获取套接字所在的房间：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">io.on(<span class="string">'connection'</span>, socket =&gt; &#123;</span><br><span class="line">  socket.on(<span class="string">'disconnecting'</span>, () =&gt; &#123;</span><br><span class="line">    <span class="keyword">const</span> rooms = <span class="built_in">Object</span>.keys(socket.rooms);</span><br><span class="line">    <span class="comment">// the rooms array contains at least the socket ID</span></span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  socket.on(<span class="string">'disconnect'</span>, () =&gt; &#123;</span><br><span class="line">    <span class="comment">// socket.rooms === &#123;&#125;</span></span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Sending-messages-from-the-outside-world"><a href="#Sending-messages-from-the-outside-world" class="headerlink" title="Sending messages from the outside-world"></a>Sending messages from the outside-world</h2><p>In some cases, you might want to emit events to sockets in Socket.IO namespaces / rooms from outside the context of your Socket.IO processes.</p>
+<p>There are several ways to tackle this problem, like implementing your own channel to send messages into the process.</p>
+<p>To facilitate this use case, we created two modules:</p>
+<ul>
+<li><a href="https://github.com/socketio/socket.io-redis" target="_blank" rel="noopener">socket.io-redis</a></li>
+<li><a href="https://github.com/socketio/socket.io-emitter" target="_blank" rel="noopener">socket.io-emitter</a></li>
+</ul>
+<p>By implementing the Redis <code>Adapter</code>:</p>
+<p>在某些情况下，您可能想从Socket.IO进程的上下文外部向Socket.IO命名空间/房间中的套接字发出事件。</p>
+<p>有多种方法可以解决此问题，例如实现自己的渠道以将消息发送到流程中。</p>
+<p>为了简化此用例，我们创建了两个模块：</p>
+<ul>
+<li><p>套接字</p>
+</li>
+<li><p>套接字发射器</p>
+</li>
+</ul>
+<p>通过实现Redis适配器：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> io = <span class="built_in">require</span>(<span class="string">'socket.io'</span>)(<span class="number">3000</span>);</span><br><span class="line"><span class="keyword">const</span> redis = <span class="built_in">require</span>(<span class="string">'socket.io-redis'</span>);</span><br><span class="line">io.adapter(redis(&#123; <span class="attr">host</span>: <span class="string">'localhost'</span>, <span class="attr">port</span>: <span class="number">6379</span> &#125;));</span><br></pre></td></tr></table></figure>
+
+<p>you can then <code>emit</code> messages from any other process to any channel</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> io = <span class="built_in">require</span>(<span class="string">'socket.io-emitter'</span>)(&#123; <span class="attr">host</span>: <span class="string">'127.0.0.1'</span>, <span class="attr">port</span>: <span class="number">6379</span> &#125;);</span><br><span class="line">setInterval(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">  io.emit(<span class="string">'time'</span>, <span class="keyword">new</span> <span class="built_in">Date</span>);</span><br><span class="line">&#125;, <span class="number">5000</span>);</span><br></pre></td></tr></table></figure>
+
+<p>Caught a mistake? Edit this page on <a href="https://github.com/socketio/socket.io-website/blob/master/source/docs/rooms.md" target="_blank" rel="noopener">GitHub</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/08/30/Socket.io/server/4.%20Rooms/" data-id="ckejc3t6m0007vcxnabo68g84" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2020/08/30/Socket.io/server/5.%20Using%20multiple%20nodes/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Socket.io/server/5. Using multiple nodes
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2020/08/30/Socket.io/server/3.%20Namespaces/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Socket.io/server/3. Namespaces</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/GridManager/" rel="tag">GridManager</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux-%E4%B8%BA%E7%9F%A5%E7%AC%94%E8%AE%B0/" rel="tag">Linux 为知笔记</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/GridManager/" style="font-size: 10px;">GridManager</a> <a href="/tags/Linux-%E4%B8%BA%E7%9F%A5%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">Linux 为知笔记</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">August 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">June 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">May 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/08/30/Socket.io/client/3.%20Connection%20lifecycle/">Socket.io/client/3. Connection lifecycle</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/30/Socket.io/client/2.%20Initialization/">Socket.io/client/2. Initialization</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/30/Socket.io/client/1.%20Installation/">Socket.io/client/1. Installation</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/30/Socket.io/server/5.%20Using%20multiple%20nodes/">Socket.io/server/5. Using multiple nodes</a>
+          </li>
+        
+          <li>
+            <a href="/2020/08/30/Socket.io/server/4.%20Rooms/">Socket.io/server/4. Rooms</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>
